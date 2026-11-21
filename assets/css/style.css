@@ -111,6 +111,8 @@ h1, h2, h3 { font-weight: 500; }
   color: var(--gold); padding: 9px 12px; border-radius: 999px; transition: color .2s, background .2s;
   text-shadow: 0 1px 2px rgba(5, 12, 29, .9), 0 0 14px rgba(5, 12, 29, .75);
 }
+.nav a { white-space: nowrap; }
+@media (min-width: 1021px) and (max-width: 1240px) { .nav { gap: 0; } .nav a { padding: 9px 8px; letter-spacing: .14em; font-size: 11.5px; } .topbar { gap: 12px; } }
 .nav a:hover { color: var(--gold-hi); }
 .nav a.on { color: var(--gold-hi); background: rgba(214, 180, 108, .1); box-shadow: inset 0 0 0 1px var(--line); }
 .menu-btn { display: none; background: none; border: 1px solid var(--line); border-radius: 10px; width: 44px; height: 40px; cursor: pointer; }
@@ -512,4 +514,33 @@ footer nav a { font-family: var(--display); font-size: 11px; letter-spacing: .24
   .trust { padding-top: 56px; padding-bottom: 56px; }
   .ref::before { font-size: 76px; top: -10px; left: 10px; }
   .ref .src { padding-left: 26px; }
+}
+
+/* ------------------------------------------------------------- the course */
+.course-about { margin: 56px auto 10px; text-align: center; }
+.course-about p { color: var(--muted); font-size: 19px; margin: 0 0 14px; }
+.ctl { position: relative; max-width: 860px; margin: 56px auto 0; padding-left: 34px; }
+.ctl::before { content: ""; position: absolute; left: 9px; top: 8px; bottom: 8px; width: 1px; background: linear-gradient(180deg, var(--gold), var(--line-soft) 92%, transparent); }
+.cstage { position: relative; margin-bottom: 26px; padding: 26px 26px 14px; border: 1px solid var(--line-soft); border-radius: 4px; background: linear-gradient(165deg, rgba(24, 40, 70, .45), rgba(8, 20, 48, .35)); }
+.cstage::before { content: ""; position: absolute; left: -30px; top: 32px; width: 9px; height: 9px; transform: rotate(45deg); background: var(--gold); box-shadow: 0 0 0 4px rgba(5, 12, 29, .95); }
+.cstage header .no { font-family: var(--display); font-size: 11px; letter-spacing: .3em; text-transform: uppercase; color: var(--gold); }
+.cstage header h3 { font-family: var(--serif); font-weight: 500; font-size: 26px; color: var(--ivory); margin: 6px 0 4px; line-height: 1.2; }
+.cstage header p { margin: 0 0 12px; color: var(--muted); font-style: italic; font-size: 16px; }
+.crow { display: flex; align-items: flex-start; gap: 14px; padding: 13px 4px; border-top: 1px solid var(--line-soft); color: var(--text); }
+a.crow:hover { background: rgba(214, 180, 108, .06); }
+.crow .ic { flex: none; width: 22px; text-align: center; color: var(--gold); font-size: 15px; line-height: 1.6; }
+.crow .tx { flex: 1; min-width: 0; }
+.crow b { display: block; font-family: var(--display); font-weight: 500; font-size: 12px; letter-spacing: .2em; text-transform: uppercase; color: var(--gold-hi); }
+.crow small { display: block; font-size: 16px; color: var(--text); margin-top: 2px; }
+.crow em { display: block; font-size: 15px; color: var(--muted); margin-top: 4px; }
+.crow .go { flex: none; color: var(--gold); align-self: center; }
+.crow.yet { opacity: .55; }
+.crow.yet small { font-style: italic; }
+@media (max-width: 560px) {
+  .ctl { padding-left: 22px; }
+  .ctl::before { left: 4px; }
+  .cstage { padding: 20px 16px 8px; }
+  .cstage::before { left: -22px; }
+  .cstage header h3 { font-size: 22px; }
+  .course-about p { font-size: 17px; text-align: left; }
 }

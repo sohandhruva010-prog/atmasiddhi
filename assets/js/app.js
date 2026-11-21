@@ -474,6 +474,42 @@
   }
 
   // ------------------------------------------------------------------ REFLECTIONS
+  async function course() {
+    main.innerHTML = `${pageHead("SRMD Courses · Online · Self-paced", "The Course", "Shri Atmasiddhi Shastra Online Course — begun in October 2025, walked one section at a time.")}<section class="wrap"><p class="loading">Loading…</p></section>`;
+    const C = await fetch("data/course.json").then((r) => r.json());
+    const all = C.sections.flatMap((x) => x.items);
+    const n = (k, f = (i) => i.date) => all.filter((i) => i.k === k && f(i)).length;
+    const icon = { objective: "◇", subjective: "✎", game: "✦", meditation: "◯" };
+    const row = (i) => {
+      const yet = !i.date;
+      const label = { objective: "Objective quiz", subjective: "Subjective quiz", game: i.name ? `Bonus game · ${esc(i.name)}` : "Bonus game", meditation: "Guided meditation" }[i.k];
+      const when = yet ? "Yet to be walked"
+        : i.k === "objective" ? `Taken ${fmtDate(i.date)}`
+        : i.k === "subjective" ? (i.awaiting ? `Submitted ${fmtDate(i.date)} · awaiting review` : `Submitted ${fmtDate(i.date)} · reviewed ${fmtDate(i.reviewed)}`)
+        : i.k === "meditation" ? `Fifteen minutes in stillness · ${fmtDate(i.date)}`
+        : (i.link ? "Submitted" : "Completed") + ` ${fmtDate(i.date)}`;
+      const href = i.k === "subjective" && i.quiz && !yet ? `#/quiz/${i.quiz}` : i.link || "";
+      const inner = `<span class="ic" aria-hidden="true">${icon[i.k]}</span><span class="tx"><b>${label}</b><small>${when}</small>${i.note ? `<em>${esc(i.note)}</em>` : ""}</span>${href ? `<span class="go" aria-hidden="true">→</span>` : ""}`;
+      return href ? `<a class="crow${yet ? " yet" : ""}" href="${href}">${inner}</a>` : `<div class="crow${yet ? " yet" : ""}">${inner}</div>`;
+    };
+    $("section.wrap", main).innerHTML = `
+      <div class="stats course-stats reveal">
+        <div class="stat"><b>${C.sections.length}</b><span>Stages</span></div>
+        <div class="stat"><b>${C.sections.reduce((a, x) => a + x.videos, 0)}</b><span>Satsangs</span></div>
+        <div class="stat"><b>${n("objective")}</b><span>Objective quizzes</span></div>
+        <div class="stat"><b>${n("subjective")}</b><span>Subjective quizzes</span></div>
+        <div class="stat"><b>${n("game")}</b><span>Bonus games</span></div>
+        <div class="stat"><b>${n("meditation")}</b><span>Meditations</span></div>
+      </div>
+      <div class="read course-about reveal">${C.about.map((p) => `<p>${esc(p)}</p>`).join("")}</div>
+      <div class="ctl">${C.sections.map((x) => `
+        <article class="cstage reveal">
+          <header><span class="no">${esc(x.no)}</span><h3>${esc(x.title)}</h3><p>${esc(x.range)} · ${x.videos} satsangs</p></header>
+          <div class="crows">${x.items.map(row).join("")}</div>
+        </article>`).join("")}
+      </div>`;
+    observe();
+  }
   async function reflections() {
     main.innerHTML = `${pageHead("Self-reflection · inner inquiry", "Reflections", "Where the teaching turned inward. The reflective questions from each section, and what came up in answering them.")}<section class="read"><p class="loading">Loading…</p></section>`;
     const Q = await getQuiz();
@@ -529,10 +565,10 @@
     window.scrollTo(0, 0);
     const views = {
       "": home, shastra, verses: () => versesIndex(a), verse: () => versePage(+a, b), satsangs, satsang: () => satsangPage(a),
-      quizzes: quizIndex, quiz: () => quizPage(a), reflections,
+      quizzes: quizIndex, quiz: () => quizPage(a), reflections, course,
     };
     await (views[r] || notFound)();
-    const titles = { "": "", verse: `Verse ${a}`, verses: "Verses", shastra: "The Shastra", satsangs: "Satsangs", satsang: "Satsang", quizzes: "Quizzes", quiz: "Quiz", reflections: "Reflections" };
+    const titles = { "": "", verse: `Verse ${a}`, verses: "Verses", shastra: "The Shastra", satsangs: "Satsangs", satsang: "Satsang", quizzes: "Quizzes", quiz: "Quiz", reflections: "Reflections", course: "The Course" };
     document.title = (titles[r] ? titles[r] + " · " : "") + "Shri Atmasiddhi Shastra · A Seeker's Journey";
     onScroll();
     observe();

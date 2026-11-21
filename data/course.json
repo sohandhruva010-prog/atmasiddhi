@@ -1,0 +1,286 @@
+{
+ "platform": "SRMD Courses",
+ "name": "Atmasiddhi Shastra Online Course",
+ "began": "2025-10-23",
+ "about": [
+  "A self-paced online course on Shri Atmasiddhi Shastra, offered through SRMD Courses, with the commentary of Param Pujya Gurudevshri Rakeshji guiding every verse.",
+  "Each section unfolds through satsang videos and the verses with their meanings, and closes with two offerings: an objective quiz taken on the course platform, and a subjective quiz written in one's own words and reviewed by scholarly disciples of Pujya Gurudevshri.",
+  "Along the way came bonus offerings, each optional and each a gift: games to revise the concepts playfully, and fifteen-minute guided meditations to sit with what was heard."
+ ],
+ "sections": [
+  {
+   "no": "Introduction",
+   "title": "An Introduction to the Shastra",
+   "range": "Mangalācharaṇ",
+   "videos": 6,
+   "items": [
+    {
+     "k": "objective",
+     "date": "2025-10-24"
+    },
+    {
+     "k": "subjective",
+     "date": "2025-10-24",
+     "reviewed": "2025-10-28",
+     "quiz": "intro"
+    }
+   ]
+  },
+  {
+   "no": "Section 1",
+   "title": "Introduction to the Path",
+   "range": "Verses 1 – 23",
+   "videos": 23,
+   "items": [
+    {
+     "k": "objective",
+     "date": "2025-11-01"
+    },
+    {
+     "k": "subjective",
+     "date": "2025-11-05",
+     "reviewed": "2025-11-07",
+     "quiz": "s1"
+    }
+   ]
+  },
+  {
+   "no": "Section 2",
+   "title": "Attributes of a Bigot",
+   "range": "Verses 24 – 33",
+   "videos": 11,
+   "items": [
+    {
+     "k": "objective",
+     "date": "2025-11-18"
+    },
+    {
+     "k": "subjective",
+     "date": "2025-11-17",
+     "reviewed": "2025-11-20",
+     "quiz": "s2"
+    }
+   ]
+  },
+  {
+   "no": "Section 3",
+   "title": "Attributes of a True Seeker",
+   "range": "Verses 34 – 42",
+   "videos": 10,
+   "items": [
+    {
+     "k": "game",
+     "note": "An interactive game on the section, ending in a secret code to unlock the bonus question.",
+     "date": "2025-11-30"
+    },
+    {
+     "k": "objective",
+     "date": "2025-11-30"
+    },
+    {
+     "k": "subjective",
+     "date": "2025-12-02",
+     "reviewed": "2025-12-05",
+     "quiz": "s3"
+    }
+   ]
+  },
+  {
+   "no": "Sections 4 & 5",
+   "title": "Naming the Truths & The Soul Exists",
+   "range": "Verses 43 – 58",
+   "videos": 18,
+   "items": [
+    {
+     "k": "meditation",
+     "date": "2025-12-23"
+    },
+    {
+     "k": "objective",
+     "date": "2025-12-25"
+    },
+    {
+     "k": "subjective",
+     "date": "2025-12-28",
+     "reviewed": "2026-01-01",
+     "quiz": "s45"
+    }
+   ]
+  },
+  {
+   "no": "Section 6",
+   "title": "The Soul is Eternal",
+   "range": "Verses 59 – 70",
+   "videos": 13,
+   "items": [
+    {
+     "k": "meditation",
+     "date": "2026-01-20"
+    },
+    {
+     "k": "objective",
+     "date": "2026-01-21"
+    },
+    {
+     "k": "subjective",
+     "date": "2026-01-23",
+     "reviewed": "2026-01-26",
+     "quiz": "s6"
+    }
+   ]
+  },
+  {
+   "no": "Section 7",
+   "title": "The Soul is the Doer",
+   "range": "Verses 71 – 78",
+   "videos": 9,
+   "items": [
+    {
+     "k": "game",
+     "name": "Connections",
+     "note": "Sixteen words, four hidden groups, drawn from the Third Fundamental. One category hint: God's pure state.",
+     "date": "2026-02-07"
+    },
+    {
+     "k": "objective",
+     "date": "2026-02-08"
+    },
+    {
+     "k": "subjective",
+     "date": "2026-02-11",
+     "reviewed": "2026-02-15",
+     "quiz": "s7"
+    }
+   ]
+  },
+  {
+   "no": "Section 8",
+   "title": "The Soul is the Enjoyer",
+   "range": "Verses 79 – 86",
+   "videos": 9,
+   "items": [
+    {
+     "k": "game",
+     "name": "Connections",
+     "note": "Sixteen words, four hidden groups, drawn from the Fourth Fundamental. Hints included the different states of life forms, and inanimate substances.",
+     "date": "2026-02-27"
+    },
+    {
+     "k": "objective",
+     "date": "2026-02-28"
+    },
+    {
+     "k": "subjective",
+     "date": "2026-03-02",
+     "reviewed": "2026-03-05",
+     "quiz": "s8"
+    }
+   ]
+  },
+  {
+   "no": "Section 9",
+   "title": "Liberation Exists",
+   "range": "Verses 87 – 91",
+   "videos": 6,
+   "items": [
+    {
+     "k": "meditation",
+     "date": "2026-03-25"
+    },
+    {
+     "k": "objective",
+     "date": "2026-03-25"
+    },
+    {
+     "k": "subjective",
+     "date": "2026-03-27",
+     "reviewed": "2026-03-31",
+     "quiz": "s9"
+    }
+   ]
+  },
+  {
+   "no": "Section 10 · A",
+   "title": "The Path of Liberation",
+   "range": "Verses 92 – 107",
+   "videos": 17,
+   "items": [
+    {
+     "k": "objective",
+     "date": "2026-04-30"
+    },
+    {
+     "k": "subjective",
+     "date": "2026-05-04",
+     "reviewed": "2026-05-06",
+     "quiz": "s10a"
+    }
+   ]
+  },
+  {
+   "no": "Section 10 · B",
+   "title": "The Path of Liberation",
+   "range": "Verses 108 – 118",
+   "videos": 11,
+   "items": [
+    {
+     "k": "meditation",
+     "date": "2026-06-10"
+    },
+    {
+     "k": "objective",
+     "date": "2026-11-01"
+    },
+    {
+     "k": "subjective",
+     "date": "2026-11-04",
+     "reviewed": "2026-11-18",
+     "quiz": "s10b"
+    }
+   ]
+  },
+  {
+   "no": "Section 11",
+   "title": "Expression of the Disciple's Enlightenment",
+   "range": "Verses 119 – 127",
+   "videos": 10,
+   "items": [
+    {
+     "k": "meditation",
+     "date": "2026-11-07"
+    },
+    {
+     "k": "objective",
+     "date": "2026-11-20"
+    },
+    {
+     "k": "subjective",
+     "date": "2026-11-20",
+     "awaiting": true,
+     "quiz": "s11"
+    }
+   ]
+  },
+  {
+   "no": "Section 12",
+   "title": "Conclusion",
+   "range": "Verses 128 – 142",
+   "videos": 16,
+   "items": [
+    {
+     "k": "game",
+     "name": "Connect the Verses",
+     "note": "Two hints from two verses of the Conclusion, pointing to one Gujarati word.",
+     "date": "2026-11-19",
+     "link": "#/quiz/bonus"
+    },
+    {
+     "k": "objective"
+    },
+    {
+     "k": "subjective"
+    }
+   ]
+  }
+ ]
+}
