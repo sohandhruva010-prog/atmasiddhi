@@ -398,13 +398,24 @@
     const range = nm || (q.id === "s45" ? "Verses 43 – 58" : rangeLabel(ss[0]));
     return { title, no, range, count: q.parts.reduce((a, p) => a + p.items.length, 0) };
   }
+  const noMarks = (t) => String(t).replace(/\s*\(\s*\d+\s*marks?(\s*each)?\s*\)/i, "").trim();
+  // Two ways into every page of questions: the written answers, or a blank page to answer oneself.
+  const modeSwitch = (a, b) => `<div class="center"><div class="mode" role="group" aria-label="View"><button data-m="read" class="on" aria-pressed="true">${a}</button><button data-m="practice" aria-pressed="false">${b}</button></div></div>`;
+  function bindMode() {
+    $(".mode").addEventListener("click", (e) => {
+      const b = e.target.closest("button"); if (!b) return;
+      document.body.classList.toggle("practice", b.dataset.m === "practice");
+      $$(".mode button").forEach((x) => { x.classList.toggle("on", x === b); x.setAttribute("aria-pressed", x === b); });
+    });
+    main.addEventListener("input", (e) => { const t = e.target.closest("textarea[data-k]"); if (t) store.set(t.dataset.k, t.value); }, { signal: ctl.signal });
+  }
   async function quizIndex() {
     main.innerHTML = `${pageHead("Subjective assessments", "The Quizzes", "At the close of every section — questions to answer in one's own words. These are the answers that were written.")}<section class="wrap"><p class="loading">Loading…</p></section>`;
     const Q = await getQuiz();
     $("section.wrap", main).innerHTML = `<div class="qgrid">${Q.quizzes.map((q) => {
       const m = quizMeta(q);
       return `<a class="qcard reveal" href="#/quiz/${q.id}"><span class="no">${m.no}</span><h3>${esc(m.title)}</h3><p>${m.range}</p>
-        <span class="meta"><span>${m.count} questions</span>${q.marks ? `<span>${q.marks} marks</span>` : ""}${q.date ? `<span>${fmtDate(q.date)}</span>` : ""}</span></a>`;
+        <span class="meta"><span>${m.count} questions</span>${q.date ? `<span>${fmtDate(q.date)}</span>` : ""}</span></a>`;
     }).join("")}
       <a class="qcard reveal" href="#/quiz/bonus" style="background:linear-gradient(165deg,rgba(214,180,108,.16),rgba(8,20,48,.5))"><span class="no">Section 12 · Bonus</span><h3>Connect the Verses</h3><p>Two hints, one Gujarati word — from the Conclusion</p>
         <span class="meta"><span>${Q.bonus.items.length} puzzles</span><span>Interactive</span></span></a>
@@ -420,15 +431,15 @@
     const m = quizMeta(q), next = Q.quizzes[qi + 1];
     let k = 0;
     main.innerHTML = `
-      ${pageHead(`${m.no} · ${m.range}`, esc(m.title), `${m.count} questions${q.marks ? ` · ${q.marks} marks` : ""}${q.date ? ` · submitted ${fmtDate(q.date)}` : ""}`)}
+      ${pageHead(`${m.no} · ${m.range}`, esc(m.title), `${m.count} questions${q.date ? ` · submitted ${fmtDate(q.date)}` : ""}`)}
       <section class="read">
-        <div class="center"><div class="mode" role="group" aria-label="Mode"><button data-m="read" class="on">My answers</button><button data-m="practice">Practice</button></div></div>
+        ${modeSwitch("The Seeker’s Pen", "Enter the Inquiry")}
         ${q.parts.map((p) => `
-          <div class="qpart"><div class="qpart-h"><h2>${esc(p.title)}</h2>${p.marks ? `<span>${p.marks} marks</span>` : ""}</div>
+          <div class="qpart"><div class="qpart-h"><h2>${esc(noMarks(p.title))}</h2></div>
           ${p.items.map((it) => { k++; const key = `asq:${q.id}:${k}`; return `
             <div class="qa" data-k="${key}">
               <div class="q"><b>${String(k).padStart(2, "0")}</b><span>${it.q}</span></div>
-              <div class="practice"><textarea placeholder="Write your own answer… (saved in this browser)">${esc(store.get(key) || "")}</textarea><button class="btn ghost sm reveal-btn">Reveal my answer</button></div>
+              <div class="practice"><textarea data-k="${key}" placeholder="Write your own answer… (saved in this browser)">${esc(store.get(key) || "")}</textarea><button class="btn ghost sm reveal-btn">Unveil my answer</button></div>
               <div class="a"><span class="who">MY ANSWER</span>${it.a.map((x) => `<p>${x}</p>`).join("")}</div>
             </div>`; }).join("")}
           </div>`).join("")}
@@ -437,10 +448,8 @@
           ${next ? `<a class="next" href="#/quiz/${next.id}"><small>Next →</small><span>${esc(quizMeta(next).no)}</span></a>` : `<a class="next" href="#/quiz/bonus"><small>Next →</small><span>Connect the Verses</span></a>`}
         </nav>
       </section>`;
-    const setMode = (md) => { document.body.classList.toggle("practice", md === "practice"); $$(".mode button").forEach((b) => b.classList.toggle("on", b.dataset.m === md)); };
-    $(".mode").addEventListener("click", (e) => { const b = e.target.closest("button"); if (b) setMode(b.dataset.m); });
-    main.addEventListener("input", (e) => { const t = e.target.closest("textarea"); if (t) store.set(t.closest(".qa").dataset.k, t.value); }, { signal: ctl.signal });
-    main.addEventListener("click", (e) => { const b = e.target.closest(".reveal-btn"); if (b) { const qa = b.closest(".qa"); qa.classList.toggle("shown"); b.textContent = qa.classList.contains("shown") ? "Hide my answer" : "Reveal my answer"; } }, { signal: ctl.signal });
+    bindMode();
+    main.addEventListener("click", (e) => { const b = e.target.closest(".reveal-btn"); if (b) { const qa = b.closest(".qa"); qa.classList.toggle("shown"); b.textContent = qa.classList.contains("shown") ? "Veil it again" : "Unveil my answer"; } }, { signal: ctl.signal });
   }
   function bonusPage(B) {
     main.innerHTML = `
@@ -476,17 +485,20 @@
       <div class="chips" id="rchips" style="justify-content:center;flex-wrap:wrap;margin-bottom:30px">
         <button class="chip on" data-f="all">All</button>${groups.map((g) => `<button class="chip" data-f="${g.q.id}">${esc(g.m.no)}</button>`).join("")}
       </div>
-      <div id="refs">${groups.map((g) => g.items.map((it) => `
+      <div style="margin:-6px 0 34px">${modeSwitch("Echoes Within", "Turn Inward")}</div>
+      <div id="refs">${groups.map((g) => g.items.map((it, i) => { const key = `asr:${g.q.id}:${i + 1}`; return `
         <article class="ref reveal" data-g="${g.q.id}">
           <div class="src">${esc(g.m.no)} · ${esc(g.m.title)}</div>
           <div class="prompt">${it.q}</div>
           <div class="body">${it.a.map((x) => `<p>${x}</p>`).join("")}</div>
-        </article>`).join("")).join("")}</div>`;
+          <div class="practice"><textarea data-k="${key}" placeholder="Sit with the question, then write what rises… (saved in this browser)">${esc(store.get(key) || "")}</textarea></div>
+        </article>`; }).join("")).join("")}</div>`;
     $("#rchips").addEventListener("click", (e) => {
       const b = e.target.closest(".chip"); if (!b) return;
       $$("#rchips .chip").forEach((c) => c.classList.toggle("on", c === b));
       $$("#refs .ref").forEach((r) => { r.hidden = b.dataset.f !== "all" && r.dataset.g !== b.dataset.f; r.classList.add("in"); });
     });
+    bindMode();
     observe();
   }
 
