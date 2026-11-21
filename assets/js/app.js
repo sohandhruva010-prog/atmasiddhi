@@ -56,7 +56,7 @@
   const orn = (cls = "") => `<div class="orn ${cls}"><i>◆</i></div>`;
   const pageHead = (eyebrow, title, lede) => `
     <header class="page-head fade-in"><div class="wrap">
-      <p class="eyebrow">${eyebrow}</p>
+      <p class="eyebrow">${String(eyebrow).split(" · ").map((p) => `<span class="nw">${p}</span>`).join(" · ")}</p>
       <h1 class="display">${title}</h1>
       ${orn()}
       ${lede ? `<p class="lede">${lede}</p>` : ""}
@@ -110,14 +110,13 @@
       <section class="hero">
         <div class="hero-img"><img src="assets/img/hero.jpg?v=2" width="1398" height="1800" alt="Pujya Gurudevshri seated before a relief of Param Krupalu Dev Shrimad Rajchandraji"></div>
         <div class="wrap"><div class="hero-copy fade-in">
-          <p class="eyebrow">Param Krupalu Dev · Shrimad Rajchandraji</p>
+          <p class="eyebrow"><span class="nw">Param Krupalu Dev</span> · <span class="nw">Shrimad Rajchandraji</span></p>
           <h1 class="display"><span>Śrī</span>Ātmasiddhi<br>Śāstra</h1>
           <div class="orn left"><i>◆</i></div>
           <p class="lede">The six spiritual truths of the soul — one hundred and forty-two verses that reveal the path to liberation.</p>
-          <p class="by">Received through the satsangs of <b>Param Pujya Gurudevshri Rakeshji</b>, and offered at His Lotus Feet — every verse, every note, every answer.</p>
+          <p class="by">Received through the satsangs of <b>Param Pujya Gurudevshri Rakeshji</b>, our beloved <b>Bapaji</b>, and offered at His Lotus Feet — every verse, every note, every answer.</p>
           <div class="cta"><a class="btn" href="#/verse/1">Begin with Verse 1</a><a class="btn ghost" href="#/verses">All 142 verses</a></div>
         </div></div>
-        <div class="scroll-cue">Scroll</div>
       </section>
 
       <section class="section showcase"><div class="read">
@@ -221,7 +220,7 @@
       </div></section>
       ${st.length ? `<section class="section" style="padding-top:0"><div class="read">
         <div class="frame stuti reveal">
-          <p class="eyebrow">Mangalācharaṇ · by Shri Lalluji Muni</p>
+          <p class="eyebrow"><span class="nw">Mangalācharaṇ</span> · <span class="nw">by Shri Lalluji Muni</span></p>
           <h2 class="display" style="font-size:clamp(24px,3.4vw,38px)">Patita Jana Pāvanī</h2>${orn()}
           ${st.map((s, i) => `<div class="gu">${s.gu.join("<br>")} ॥${guDigits(i + 1)}॥</div><div class="iast">${s.iast.join("<br>")}</div>${i < st.length - 1 ? orn() : ""}`).join("")}
           <p style="margin:26px 0 0;color:var(--muted);font-size:17px">The scripture is likened to the Ganga that purifies the fallen, brought down — as Bhagiratha brought the river — by the fortunate Saubhagbhai's request; composed by Param Krupalu Dev at Nadiad with Ambalalbhai holding the lamp.</p>
@@ -255,7 +254,7 @@
       <section class="wrap">
         <div class="toolbar">
           <label class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
-            <input id="q" type="search" placeholder="Search a verse — number, word, meaning…" autocomplete="off" aria-label="Search verses"></label>
+            <input id="q" type="search" placeholder="Search by verse number or word…" autocomplete="off" aria-label="Search verses"></label>
           <div class="chips" id="chips">
             <button class="chip ${active === "all" ? "on" : ""}" data-f="all">All</button>
             ${SITE.sections.filter((s) => s.range).map((s) => `<button class="chip ${active === s.id ? "on" : ""}" data-f="${s.id}">${s.n}. ${esc(s.name.split(" — ")[0])}</button>`).join("")}
@@ -301,7 +300,7 @@
         <h1>${esc(v.title)}</h1>
         ${orn()}
         <div class="verse-card">
-          <div class="gu">${v.gu.join("<br>")} ॥${guDigits(n)}॥</div>
+          <div class="gu">${v.gu.join("<br>")}&nbsp;॥${guDigits(n)}॥</div>
           <div class="iast">${v.iast.join("<br>")}</div>
           <div class="tr">${v.tr.map(esc).join("<br>")}</div>
         </div>
