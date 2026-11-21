@@ -108,13 +108,13 @@
       </a>`).join("");
     main.innerHTML = `
       <section class="hero">
-        <div class="hero-img"><img src="assets/img/hero.jpg" alt="Pujya Gurudevshri seated before a relief of Param Krupalu Dev Shrimad Rajchandraji"></div>
+        <div class="hero-img"><img src="assets/img/hero.jpg?v=2" width="1398" height="1800" alt="Pujya Gurudevshri seated before a relief of Param Krupalu Dev Shrimad Rajchandraji"></div>
         <div class="wrap"><div class="hero-copy fade-in">
           <p class="eyebrow">Param Krupalu Dev · Shrimad Rajchandraji</p>
           <h1 class="display"><span>Śrī</span>Ātmasiddhi<br>Śāstra</h1>
           <div class="orn left"><i>◆</i></div>
           <p class="lede">The six spiritual truths of the soul — one hundred and forty-two verses that reveal the path to liberation.</p>
-          <p class="by">Studied through the satsangs of <b>Pujya Gurudevshri</b>. Every verse, every note, every answer — gathered here.</p>
+          <p class="by">Received through the satsangs of <b>Param Pujya Gurudevshri Rakeshji</b>, and offered at His Lotus Feet — every verse, every note, every answer.</p>
           <div class="cta"><a class="btn" href="#/verse/1">Begin with Verse 1</a><a class="btn ghost" href="#/verses">All 142 verses</a></div>
         </div></div>
         <div class="scroll-cue">Scroll</div>
