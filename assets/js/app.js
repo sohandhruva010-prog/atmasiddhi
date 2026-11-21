@@ -513,6 +513,11 @@
   }
   // ------------------------------------------------------------------ SVADHYAY — the whole Shastra in one flow
   const mmss = (t) => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, "0")}`;
+  // The SRMD Bhakti recording keeps a steady beat: verse 1 begins with the first sung word (~1.5 s),
+  // and each verse lasts 13.915 s through verse 142 (ends ~32:57); a closing follows.
+  const SING = { t0: 1.5, per: 13.915, last: 142 };
+  const verseAt = (t) => Math.max(1, Math.min(SING.last, Math.floor((t - SING.t0) / SING.per) + 1));
+  const verseStart = (n) => SING.t0 + (n - 1) * SING.per + 0.05;
   async function svadhyay(start) {
     const V = SITE.verses, S = SITE.sections.filter((x) => x.range);
     const modes = [["both", "Both"], ["gu", "ગુજરાતી"], ["en", "English"]];
@@ -522,49 +527,51 @@
       <div class="sv" data-mode="${mode}">
         ${pageHead("Param Krupalu Dev · Shrimad Rajchandraji", "Svādhyāy", "The complete Śrī Ātmasiddhi Śāstra — one hundred and forty-two verses, in one unbroken flow.")}
         <div class="center sv-modes"><div class="mode" role="group" aria-label="Script">${modes.map(([k, l]) => `<button data-sv="${k}" class="${k === mode ? "on" : ""}" aria-pressed="${k === mode}">${l}</button>`).join("")}</div></div>
-        <div class="sv-body">
-          <nav class="sv-rail" aria-label="Sections and verses">
-            <div class="sv-rail-top"><p>Twelve sections · 142 verses</p><button class="sv-close" aria-label="Close">✕</button></div>
-            ${S.map((x) => `
-              <div class="sv-grp" data-s="${x.id}">
-                <a class="sv-sec" href="#/svadhyay/${x.range[0]}" data-go="s:${x.id}"><span class="n">${x.n}</span><span class="t">${esc(short(x))}<small>${x.range[0] === x.range[1] ? x.range[0] : `${x.range[0]} – ${x.range[1]}`}</small></span></a>
-                <div class="sv-chips">${V.filter((v) => v.section === x.id).map((v) => `<a href="#/svadhyay/${v.n}" data-go="v:${v.n}" title="${esc(v.title)}">${v.n}</a>`).join("")}</div>
-              </div>`).join("")}
-          </nav>
-          <article class="sv-text">
-            ${S.map((x) => `
-              <header class="sv-open" id="sv-${x.id}">
-                <span class="no">Section ${x.n}</span>
-                <h2>${esc(short(x))}</h2>
-                <p class="iast">${esc(x.iast)}</p>
-                <p class="rng">${rangeLabel(x)}</p>
-                ${orn()}
-              </header>
-              ${V.filter((v) => v.section === x.id).map((v) => `
-                <div class="sv-v" id="sv-${v.n}" data-n="${v.n}" data-s="${x.id}">
-                  <a class="sv-n" href="#/verse/${v.n}" title="${esc(v.title)} — open verse ${v.n}">${v.n}</a>
-                  <p class="gu">${v.gu[0]}<br>${v.gu[1]}&nbsp;<span class="nw">॥${guDigits(v.n)}॥</span></p>
-                  <p class="tr">${esc(v.tr[0])}<br>${esc(v.tr[1])}<span class="trn">&nbsp;&nbsp;${v.n}</span></p>
-                </div>`).join("")}`).join("")}
-            <footer class="sv-end">${orn()}<p class="gu">॥ શ્રી સદ્ગુરુ ચરણાર્પણમસ્તુ ॥</p><p>One hundred and forty-two verses · offered at His Lotus Feet</p></footer>
-          </article>
-        </div>
+        <article class="sv-text">
+          ${S.map((x) => `
+            <header class="sv-open" id="sv-${x.id}">
+              <span class="no">Section ${x.n}</span>
+              <h2>${esc(short(x))}</h2>
+              <p class="iast">${esc(x.iast)}</p>
+              <p class="rng">${rangeLabel(x)}</p>
+              ${orn()}
+            </header>
+            ${V.filter((v) => v.section === x.id).map((v) => `
+              <div class="sv-v" id="sv-${v.n}" data-n="${v.n}" data-s="${x.id}">
+                <p class="gu">${v.gu[0]}<br>${v.gu[1]}&nbsp;<a class="sv-num nw" href="#/verse/${v.n}" title="${esc(v.title)} — open verse ${v.n}">॥${guDigits(v.n)}॥</a></p>
+                <p class="tr">${esc(v.tr[0])}<br>${esc(v.tr[1])}&nbsp;&nbsp;<a class="sv-num en" href="#/verse/${v.n}" title="${esc(v.title)} — open verse ${v.n}">${v.n}</a></p>
+              </div>`).join("")}`).join("")}
+          <footer class="sv-end">${orn()}<p class="gu">॥ શ્રી સદ્ગુરુ ચરણાર્પણમસ્તુ ॥</p><p>One hundred and forty-two verses · offered at His Lotus Feet</p></footer>
+        </article>
+        <nav class="sv-rail" aria-label="Sections and verses" aria-hidden="true">
+          <div class="sv-rail-top"><p>Twelve sections · 142 verses</p><button class="sv-close" aria-label="Close">✕</button></div>
+          <div class="sv-rec">
+            <div class="sv-meta"><b>Shri Atmasiddhi Shastra</b><small>Sung by SRMD Bhakti · follows along as it plays</small></div>
+            <input class="sv-seek" type="range" min="0" max="1000" value="0" step="1" aria-label="Position in the recording"><span class="sv-time">0:00 / 34:05</span>
+          </div>
+          ${S.map((x) => `
+            <div class="sv-grp" data-s="${x.id}">
+              <a class="sv-sec" href="#/svadhyay/${x.range[0]}" data-go="${x.range[0]}" data-sec="1"><span class="n">${x.n}</span><span class="t">${esc(short(x))}<small>${x.range[0] === x.range[1] ? x.range[0] : `${x.range[0]} – ${x.range[1]}`}</small></span></a>
+              <div class="sv-chips">${V.filter((v) => v.section === x.id).map((v) => `<a href="#/svadhyay/${v.n}" data-go="${v.n}" title="${esc(v.title)}">${v.n}</a>`).join("")}</div>
+            </div>`).join("")}
+        </nav>
         <div class="sv-dock" role="region" aria-label="Recording">
-          <button class="sv-play" aria-label="Play Shri Atmasiddhi Shastra, sung by SRMD Bhakti" aria-pressed="false">
+          <button class="sv-play" title="Shri Atmasiddhi Shastra · sung by SRMD Bhakti" aria-label="Play Shri Atmasiddhi Shastra, sung by SRMD Bhakti" aria-pressed="false">
+            <svg class="sv-ring" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="22"/></svg>
             <svg class="pl-ic play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z"/></svg>
             <svg class="pl-ic pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h3.6v14H7zM13.4 5H17v14h-3.6z"/></svg>
           </button>
-          <div class="sv-meta"><b>Shri Atmasiddhi Shastra</b><small>Sung by SRMD Bhakti</small></div>
-          <div class="sv-track"><input class="sv-seek" type="range" min="0" max="1000" value="0" step="1" aria-label="Position in the recording"><span class="sv-time">0:00 / 34:05</span></div>
-          <button class="sv-jump" aria-label="Jump to a section or verse"><span class="sv-where">Section 1 · Verse 1</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h10"/></svg></button>
+          <button class="sv-follow" aria-label="Follow the singing">Follow</button>
+          <button class="sv-jump" aria-label="Open sections and verses" aria-expanded="false"><span class="sv-where">Verse 1</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h10"/></svg></button>
         </div>
         <div class="sv-scrim"></div>
       </div>`;
     const root = $(".sv", main), rail = $(".sv-rail", root), verses = $$(".sv-v", root);
+    const au = $("#sAudio"), btn = $(".sv-play", root), seek = $(".sv-seek", root), time = $(".sv-time", root), jump = $(".sv-jump", root);
     const sig = { signal: ctl.signal };
-    let cur = null, curS = null, tick = false;
+    let cur = null, curS = null, tick = false, follow = true, sung = 0;
 
-    // script toggle: Gujarati & English / Gujarati / English (remembered)
+    // script toggle: Both / Gujarati / English (remembered)
     $(".sv-modes", root).addEventListener("click", (e) => {
       const b = e.target.closest("button"); if (!b) return;
       const keep = cur && cur.getBoundingClientRect().top;
@@ -573,33 +580,36 @@
       if (cur) window.scrollBy(0, cur.getBoundingClientRect().top - keep);
     });
 
-    // jumping: sections and verses
-    const sheet = (open) => root.classList.toggle("sheet-open", open);
-    const go = (target, smooth = true) => {
-      const [k, v] = target.split(":");
-      const el = $(`#sv-${v}`);
-      if (!el) return;
-      const y = el.getBoundingClientRect().top + scrollY - (k === "s" ? 70 : Math.min(innerHeight * 0.28, 240));
+    // the index of sections and verses: tucked away, opened only when wanted
+    const panel = (open) => {
+      root.classList.toggle("sheet-open", open);
+      rail.setAttribute("aria-hidden", !open); jump.setAttribute("aria-expanded", open);
+      if (open) { const on = $(".sv-chips a.on", rail); if (on) on.scrollIntoView({ block: "center" }); }
+    };
+    const scrollToVerse = (n, smooth = true) => {
+      const el = $(`#sv-${n}`); if (!el) return;
+      const y = el.getBoundingClientRect().top + scrollY - Math.min(innerHeight * 0.3, 260) + 0;
       window.scrollTo({ top: Math.max(0, y), behavior: smooth ? "smooth" : "auto" });
     };
+    const go = (n, isSection) => {
+      if (isSection) { const el = $(`#sv-${sec($(`#sv-${n}`).dataset.s).id}`); window.scrollTo({ top: el.getBoundingClientRect().top + scrollY - 70, behavior: "smooth" }); }
+      else scrollToVerse(n);
+      if (!au.paused) { au.currentTime = verseStart(n); sung = n; follow = !isSection; root.classList.toggle("lost", !follow); }
+    };
     rail.addEventListener("click", (e) => {
-      if (e.target.closest(".sv-close")) return sheet(false);
-      const a = e.target.closest("[data-go]");
-      if (!a) return;
-      e.preventDefault(); go(a.dataset.go); sheet(false);
+      if (e.target.closest(".sv-close")) return panel(false);
+      const a = e.target.closest("[data-go]"); if (!a) return;
+      e.preventDefault(); panel(false); go(+a.dataset.go, !!a.dataset.sec);
     });
-    $(".sv-jump", root).addEventListener("click", () => {
-      sheet(true);
-      const on = $(".sv-chips a.on", rail); if (on) on.scrollIntoView({ block: "center" });
-    });
-    $(".sv-scrim", root).addEventListener("click", () => sheet(false));
-    addEventListener("keydown", (e) => { if (e.key === "Escape") sheet(false); }, sig);
+    jump.addEventListener("click", () => panel(!root.classList.contains("sheet-open")));
+    $(".sv-scrim", root).addEventListener("click", () => panel(false));
+    addEventListener("keydown", (e) => { if (e.key === "Escape") panel(false); }, sig);
 
-    // follow the reader: brighten the verse at the reading line, keep the rail in step
+    // follow the reader: brighten the verse at the reading line, keep the index in step
     const where = $(".sv-where", root);
     const spy = () => {
       tick = false;
-      const line = innerHeight * 0.38;
+      const line = innerHeight * 0.4;
       let best = null, bd = 1e9;
       for (const el of verses) {
         const r = el.getBoundingClientRect();
@@ -612,42 +622,52 @@
       if (cur) cur.classList.remove("now");
       best.classList.add("now"); cur = best;
       const n = +best.dataset.n, s = best.dataset.s;
-      where.textContent = `Section ${sec(s).n} · Verse ${n}`;
+      where.textContent = `Verse ${n}`;
       $$(".sv-chips a.on", rail).forEach((a) => a.classList.remove("on"));
-      const chip = $(`.sv-chips a[data-go="v:${n}"]`, rail); if (chip) chip.classList.add("on");
-      if (s !== curS) {
-        curS = s;
-        $$(".sv-grp", rail).forEach((g) => g.classList.toggle("on", g.dataset.s === s));
-        const g = $(`.sv-grp[data-s="${s}"]`, rail);
-        if (g && matchMedia("(min-width: 1100px)").matches) {
-          const rr = rail.getBoundingClientRect(), gr = g.getBoundingClientRect();
-          if (gr.top < rr.top + 40 || gr.bottom > rr.bottom - 20) rail.scrollTo({ top: rail.scrollTop + gr.top - rr.top - 60, behavior: "smooth" });
-        }
-      }
+      const chip = $(`.sv-chips a[data-go="${n}"]`, rail); if (chip) chip.classList.add("on");
+      if (s !== curS) { curS = s; $$(".sv-grp", rail).forEach((g) => g.classList.toggle("on", g.dataset.s === s)); }
     };
     addEventListener("scroll", () => { if (!tick) { tick = true; requestAnimationFrame(spy); } }, { passive: true, signal: ctl.signal });
     addEventListener("resize", spy, sig);
 
-    // the recording — Shri Atmasiddhi Shastra, sung by SRMD Bhakti
-    const au = $("#sAudio"), btn = $(".sv-play", root), seek = $(".sv-seek", root), time = $(".sv-time", root);
+    // the recording — Shri Atmasiddhi Shastra, sung by SRMD Bhakti — and the page that follows it
     const D = () => au.duration || 2044.66;
     let dragging = false;
+    const lose = () => { if (!au.paused && follow) { follow = false; root.classList.add("lost"); } };
+    ["wheel", "touchmove"].forEach((ev) => addEventListener(ev, lose, { passive: true, signal: ctl.signal }));
+    addEventListener("keydown", (e) => { if (/^(ArrowUp|ArrowDown|PageUp|PageDown|Home|End| )$/.test(e.key) && !/input|textarea/i.test(document.activeElement?.tagName)) lose(); }, sig);
+    const sing = () => {
+      if (au.paused) return;
+      const n = verseAt(au.currentTime);
+      root.querySelectorAll(".sv-v.sung").forEach((el) => +el.dataset.n !== n && el.classList.remove("sung"));
+      const el = $(`#sv-${n}`); if (el) el.classList.add("sung");
+      if (n !== sung) { sung = n; if (follow) scrollToVerse(n); }
+    };
+    const ring = $(".sv-ring circle", root), RC = 2 * Math.PI * 22;
+    ring.style.strokeDasharray = RC;
     const paint = () => {
+      ring.style.strokeDashoffset = RC * (1 - au.currentTime / D());
       if (!dragging) seek.value = Math.round((au.currentTime / D()) * 1000);
       seek.style.setProperty("--p", `${(seek.value / 10).toFixed(1)}%`);
       time.textContent = `${mmss(au.currentTime)} / ${mmss(D())}`;
+      sing();
     };
     const state = () => {
       const on = !au.paused;
       root.classList.toggle("playing", on);
+      if (!on) { root.classList.remove("lost"); root.querySelectorAll(".sv-v.sung").forEach((el) => el.classList.remove("sung")); }
       btn.setAttribute("aria-pressed", on);
       btn.setAttribute("aria-label", on ? "Pause the recording" : "Play Shri Atmasiddhi Shastra, sung by SRMD Bhakti");
     };
     btn.addEventListener("click", () => {
-      if (au.paused) { const g = $("#audio"); if (g && !g.paused) g.pause(); au.play().catch(() => {}); }
-      else au.pause();
+      if (au.paused) {
+        const g = $("#audio"); if (g && !g.paused) g.pause();
+        follow = true; sung = 0; root.classList.remove("lost");
+        au.play().catch(() => {});
+      } else au.pause();
     });
-    ["play", "pause", "ended"].forEach((ev) => au.addEventListener(ev, state, sig));
+    $(".sv-follow", root).addEventListener("click", () => { follow = true; root.classList.remove("lost"); scrollToVerse(verseAt(au.currentTime)); });
+    ["play", "pause", "ended"].forEach((ev) => au.addEventListener(ev, () => { state(); paint(); }, sig));
     au.addEventListener("timeupdate", paint, sig);
     au.addEventListener("loadedmetadata", paint, sig);
     seek.addEventListener("input", () => {
@@ -655,10 +675,14 @@
       time.textContent = `${mmss((seek.value / 1000) * D())} / ${mmss(D())}`;
       seek.style.setProperty("--p", `${(seek.value / 10).toFixed(1)}%`);
     });
-    seek.addEventListener("change", () => { dragging = false; au.currentTime = (seek.value / 1000) * D(); paint(); });
+    seek.addEventListener("change", () => {
+      dragging = false; au.currentTime = (seek.value / 1000) * D(); follow = true; sung = 0; root.classList.remove("lost");
+      if (!au.paused) panel(false);
+      paint();
+    });
     state(); paint();
 
-    requestAnimationFrame(() => { if (start && $(`#sv-${start}`)) go(`v:${start}`, false); spy(); });
+    requestAnimationFrame(() => { if (start && $(`#sv-${start}`)) scrollToVerse(start, false); spy(); });
   }
   async function reflections() {
     main.innerHTML = `${pageHead("Self-reflection · inner inquiry", "Reflections", "Where the teaching turned inward. The reflective questions from each section, and what came up in answering them.")}<section class="read"><p class="loading">Loading…</p></section>`;
