@@ -1,0 +1,59 @@
+{
+  "intro": [
+    {
+      "title": "An Introduction to Shri Atmasiddhi Shastra",
+      "marks": 20,
+      "items": [
+        {
+          "q": "What is the meaning and significance of the words Shri, Atma, Siddhi and Shastra?",
+          "a": [
+            "<strong>Shri</strong> — The word Shri is used in front of something holy or sacred. It shows greatness, purity and divinity. By adding Shri before Atmasiddhi Shastra, it reminds us that this is not an ordinary book. It's a sacred scripture with divine wisdom written by an Enlightened Master, Shrimad Rajchandraji. It also shows our deep respect for the text and its author.",
+            "<strong>Atma</strong> means the soul — our true inner self that is eternal, full of knowledge and separate from the body and mind. The soul is pure and unchanging, but due to ignorance, we forget our real nature and think we are just the body or mind. The atma is the main subject of this scripture. The entire Shastra helps us to understand and realise who we truly are — the pure soul.",
+            "<strong>Siddhi</strong> means attainment, accomplishment, or realisation. In this context, it means achieving Self-realisation — realising and experiencing the soul directly. When a person gains Atma-Siddhi, it means he has attained knowledge of his true self and becomes free from ignorance and bondage. This is the ultimate goal of spiritual life.",
+            "<strong>Shastra</strong> means scripture or sacred text. It is a work that teaches truth and guides seekers on the spiritual path. A Shastra contains logical reasoning, examples, and explanations that help us understand deep spiritual ideas clearly. Shri Atmasiddhi Shastra is therefore a spiritual guide written in poetic form to lead seekers towards Self-realisation."
+          ]
+        },
+        {
+          "q": "Mention any 3 benefits of the question-answer style of Shri Atmasiddhi Shastra for the reader. Mention any 3 spiritual texts that employ a similar style.",
+          "a": [
+            "<strong>Three benefits:</strong>",
+            "<strong>1. Easy to understand</strong> — The question-answer format makes difficult spiritual ideas simple and clear. It helps readers understand each concept step by step.",
+            "<strong>2. Clears doubts</strong> — The disciple's questions are similar to the doubts that arise in our own minds. When the Guru answers them, our own doubts are also removed.",
+            "<strong>3. Creates interest and connection</strong> — The dialogue between the Guru and disciple keeps the reader interested and makes the scripture feel like a personal conversation. It helps us reflect deeply on each truth.",
+            "<strong>Three spiritual texts:</strong>",
+            "<strong>1. Bhagavad Gita</strong> — a dialogue between Lord Krishna and Arjun.",
+            "<strong>2. Upanishads</strong> — conversations between spiritual teachers and their disciples.",
+            "<strong>3. Samaysar</strong> — explains truths of the soul through questions and answers between the soul and right knowledge."
+          ]
+        },
+        {
+          "q": "a) Who has written the mangalacharan of Shri Atmasiddhi Shastra? b) In the mangalacharan, what analogy is given for Shri Atmasiddhi Shastra and for P. Saubhagbhai? c) What is the meaning of Patit Jan Pavani and Adham Uddharini?",
+          "a": [
+            "<strong>(a)</strong> The mangalacharan of Shri Atmasiddhi Shastra was written by Pujya Lalluji Muni.",
+            "<strong>(b)</strong> Shri Atmasiddhi Shastra is compared to a Kalpavruksha — a wish-fulfilling tree that grants the ultimate spiritual wish of Self-realisation to seekers. Pujya Saubhagbhai is compared to a garden or fertile land where this Kalpavruksha first grew, because the scripture was composed in response to his request.",
+            "<strong>(c) Patit Jan Pavani</strong> means the purifier or uplifter of fallen souls — one who frees people lost in ignorance and wrong beliefs. <strong>Adham Uddharini</strong> means the saviour of the lowly or the humble — one who uplifts even the most ignorant and unworthy beings towards the path of liberation."
+          ]
+        },
+        {
+          "q": "Give any two reasons explaining the universal appeal of Shri Atmasiddhi Shastra.",
+          "a": [
+            "<strong>1. Applies to all, beyond religion or caste</strong> — Shri Atmasiddhi Shastra speaks about the soul, which is common to all living beings. Its message is not limited to any religion, sect, or community. It is for anyone seeking truth and peace.",
+            "<strong>2. Practical and experiential teaching</strong> — The Shastra does not just give theories. It shows a practical path for daily living and inner growth. It guides one to experience Self-realisation through right thinking, faith, and conduct, which makes it meaningful for people of all backgrounds and times."
+          ]
+        }
+      ]
+    }
+  ],
+  "bonus": {
+    "title": "Connect the Verses",
+    "intro": "Each question has two distinct hints originating from two separate verses of the Upsamhar (Conclusion) section. Both hints point to the same core Gujarati word from the original verses.",
+    "example": {"h1": "The viewpoint which is kept in perfect harmony with the absolute viewpoint, rather than being stated one-sidedly in Shri Atmasiddhi Shastra.", "h2": "The sad………… which is entirely absent in those who harbor imagined, sectarian distinctions of creed.", "a": "Vyavahar"},
+    "items": [
+      {"h1": "Those who have been in the past, are in the present, and will be in the future, treading the exact same path of liberation.", "h2": "The One Who is beyond the body despite being in an embodied condition, and at Whose lotus feet innumerable salutations are offered.", "a": "Jnani"},
+      {"h1": "The specific type of \"effort\" you are instructed to make if you truly desire the supreme truth without making excuses.", "h2": "One of the seven cardinal virtues that is constantly awake in the heart of a true seeker, listed alongside compassion, peace, and equanimity.", "a": "Satya"},
+      {"h1": "The expert physician Who is uniquely capable of curing the deadly disease of self-delusion.", "h2": "The one whose commands serve as a powerful instrumental cause for our liberation.", "a": "Sadguru"},
+      {"h1": "That viewpoint which you must keep in focus without giving up your spiritual means.", "h2": "That viewpoint which is considered entirely futile or unbeneficial if you lack the true awareness of the Self.", "a": "Nishchay"},
+      {"h1": "That which remains perfectly intact deep inside a hypocrite, even while he verbally preaches lofty spiritual knowledge.", "h2": "That which must be either totally destroyed or highly subsided to truly verify the enlightened state.", "a": "Moh"}
+    ]
+  }
+}
