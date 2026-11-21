@@ -607,7 +607,7 @@ a.crow:hover { background: rgba(214, 180, 108, .06); }
 .sv-time { display: block; font-family: var(--display); font-size: 10px; letter-spacing: .16em; color: var(--faint); text-align: right; }
 
 /* the dock: small, bottom right */
-.sv-dock { position: fixed; right: 18px; bottom: calc(18px + env(safe-area-inset-bottom)); z-index: 44; display: flex; align-items: center; gap: 6px; padding: 5px; border-radius: 999px; border: 1px solid var(--line); background: rgba(6, 13, 31, .82); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); box-shadow: 0 14px 40px -16px rgba(0, 0, 0, .9); }
+.sv-dock { position: fixed; left: 18px; bottom: calc(18px + env(safe-area-inset-bottom)); z-index: 44; display: flex; align-items: center; gap: 6px; padding: 5px; border-radius: 999px; border: 1px solid var(--line); background: rgba(6, 13, 31, .82); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); box-shadow: 0 14px 40px -16px rgba(0, 0, 0, .9); }
 .sv-play { position: relative; flex: none; width: 40px; height: 40px; border-radius: 50%; border: 0; padding: 0; cursor: pointer; background: radial-gradient(circle at 35% 30%, var(--gold-hi), var(--gold) 58%, var(--gold-lo)); }
 .sv-ring { position: absolute; inset: -4px; width: 48px; height: 48px; transform: rotate(-90deg); pointer-events: none; }
 .sv-ring circle { fill: none; stroke: var(--gold-hi); stroke-width: 1.6; stroke-linecap: round; transition: stroke-dashoffset .25s linear; }
@@ -628,7 +628,7 @@ body:has(.sv-dock) footer { padding-bottom: 110px; }
   .sv-rail { top: auto; right: 0; width: auto; max-height: 80vh; padding: 18px 18px 30px; border-right: 0; border-top: 1px solid var(--line); border-radius: 22px 22px 0 0; transform: translateY(105%); }
 }
 @media (max-width: 640px) {
-  .sv-dock { right: 12px; bottom: calc(12px + env(safe-area-inset-bottom)); }
+  .sv-dock { left: 12px; bottom: calc(12px + env(safe-area-inset-bottom)); }
   .sv-v { padding: 28px 0 30px; }
   .sv-v .gu { font-size: min(5.3vw, 24px); }
   .sv-v .tr { font-size: min(4.4vw, 19px); }
