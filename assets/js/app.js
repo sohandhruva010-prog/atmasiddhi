@@ -513,11 +513,12 @@
   }
   // ------------------------------------------------------------------ SVADHYAY — the whole Shastra in one flow
   const mmss = (t) => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, "0")}`;
-  // The SRMD Bhakti recording keeps a steady beat: verse 1 begins with the first sung word (~1.5 s),
-  // and each verse lasts 13.915 s through verse 142 (ends ~32:57); a closing follows.
+  // The SRMD Bhakti recording keeps a steady beat: verse 1 begins with the first sung word (~1.5 s)
+  // and is sung twice; every verse after lasts one beat of 13.915 s through verse 142 (ends ~33:11);
+  // a closing follows.
   const SING = { t0: 1.5, per: 13.915, last: 142 };
-  const verseAt = (t) => Math.max(1, Math.min(SING.last, Math.floor((t - SING.t0) / SING.per) + 1));
-  const verseStart = (n) => SING.t0 + (n - 1) * SING.per + 0.05;
+  const verseAt = (t) => Math.max(1, Math.min(SING.last, Math.floor((t - SING.t0) / SING.per)));
+  const verseStart = (n) => (n <= 1 ? SING.t0 : SING.t0 + n * SING.per) + 0.05;
   async function svadhyay(start) {
     const V = SITE.verses, S = SITE.sections.filter((x) => x.range);
     const modes = [["both", "Both"], ["gu", "ગુજરાતી"], ["en", "English"]];
