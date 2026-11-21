@@ -621,6 +621,14 @@ a.crow:hover { background: rgba(214, 180, 108, .06); }
 .sv-jump { display: flex; align-items: center; gap: 8px; flex: none; border: 0; background: none; border-radius: 999px; padding: 9px 12px 9px 10px; cursor: pointer; color: var(--gold-hi); font-family: var(--display); font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; transition: background .25s; }
 .sv-jump:hover { background: rgba(214, 180, 108, .1); }
 .sv-jump svg { width: 16px; height: 16px; stroke: currentColor; stroke-width: 1.8; fill: none; stroke-linecap: round; }
+.sv-speed { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.sv-speed span { font-family: var(--display); font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: var(--faint); margin-right: 4px; }
+.sv-speed button { border: 1px solid var(--line-soft); background: none; border-radius: 999px; padding: 6px 10px; cursor: pointer; font-family: var(--display); font-size: 11px; letter-spacing: .06em; color: var(--muted); transition: background .2s, color .2s, border-color .2s; }
+.sv-speed button:hover { color: var(--gold-hi); border-color: var(--line); }
+.sv-speed button.on { background: var(--gold); border-color: var(--gold); color: var(--ink); }
+.sv-rate { flex: none; min-width: 40px; height: 32px; border: 1px solid var(--line-soft); background: none; border-radius: 999px; padding: 0 8px; cursor: pointer; font-family: var(--display); font-size: 11px; letter-spacing: .04em; color: var(--muted); transition: color .2s, border-color .2s, background .2s; }
+.sv-rate:hover { color: var(--gold-hi); border-color: var(--line); }
+.sv-rate.on { color: var(--gold-hi); border-color: var(--gold); background: rgba(214, 180, 108, .1); }
 body:has(.sv-dock) .to-top { display: none; }
 body:has(.sv-dock) footer { padding-bottom: 110px; }
 

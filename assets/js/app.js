@@ -517,6 +517,7 @@
   // and is sung twice; every verse after lasts one beat of 13.915 s through verse 142 (ends ~33:11);
   // a closing follows.
   const SING = { t0: 1.5, per: 13.915, last: 142 };
+  const SPEEDS = [1, 1.2, 1.5, 1.7, 2];
   const verseAt = (t) => Math.max(1, Math.min(SING.last, Math.floor((t - SING.t0) / SING.per)));
   const verseStart = (n) => (n <= 1 ? SING.t0 : SING.t0 + n * SING.per) + 0.05;
   async function svadhyay(start) {
@@ -549,6 +550,7 @@
           <div class="sv-rec">
             <div class="sv-meta"><b>Shri Atmasiddhi Shastra</b><small>Sung by SRMD Bhakti · follows along as it plays</small></div>
             <input class="sv-seek" type="range" min="0" max="1000" value="0" step="1" aria-label="Position in the recording"><span class="sv-time">0:00 / 34:05</span>
+            <div class="sv-speed" role="group" aria-label="Playback speed"><span>Speed</span>${SPEEDS.map((r) => `<button data-rate="${r}" aria-pressed="false">${r}×</button>`).join("")}</div>
           </div>
           ${S.map((x) => `
             <div class="sv-grp" data-s="${x.id}">
@@ -562,6 +564,7 @@
             <svg class="pl-ic play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z"/></svg>
             <svg class="pl-ic pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h3.6v14H7zM13.4 5H17v14h-3.6z"/></svg>
           </button>
+          <button class="sv-rate" aria-label="Playback speed">1×</button>
           <button class="sv-follow" aria-label="Follow the singing">Follow</button>
           <button class="sv-jump" aria-label="Open sections and verses" aria-expanded="false"><span class="sv-where">Verse 1</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h10"/></svg></button>
         </div>
@@ -667,6 +670,19 @@
         au.play().catch(() => {});
       } else au.pause();
     });
+    // speed: 1× · 1.2× · 1.5× · 1.7× · 2× (remembered); the page still follows, since it reads the recording's own clock
+    const rateBtn = $(".sv-rate", root);
+    const setRate = (r) => {
+      if (!SPEEDS.includes(r)) r = 1;
+      au.defaultPlaybackRate = r; au.playbackRate = r; store.set("sv:rate", r);
+      rateBtn.textContent = `${r}×`; rateBtn.classList.toggle("on", r !== 1);
+      rateBtn.setAttribute("aria-label", `Playback speed ${r}×, tap to change`);
+      $$(".sv-speed button", root).forEach((b) => { const on = +b.dataset.rate === r; b.classList.toggle("on", on); b.setAttribute("aria-pressed", on); });
+    };
+    setRate(+store.get("sv:rate") || 1);
+    rateBtn.addEventListener("click", () => setRate(SPEEDS[(SPEEDS.indexOf(au.playbackRate) + 1) % SPEEDS.length]));
+    $(".sv-speed", root).addEventListener("click", (e) => { const b = e.target.closest("button"); if (b) setRate(+b.dataset.rate); });
+    au.addEventListener("play", () => { const r = +store.get("sv:rate") || 1; if (au.playbackRate !== r) au.playbackRate = r; }, sig);
     $(".sv-follow", root).addEventListener("click", () => { follow = true; root.classList.remove("lost"); scrollToVerse(verseAt(au.currentTime)); });
     ["play", "pause", "ended"].forEach((ev) => au.addEventListener(ev, () => { state(); paint(); }, sig));
     au.addEventListener("timeupdate", paint, sig);
