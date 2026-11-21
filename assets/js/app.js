@@ -111,7 +111,7 @@
         <div class="hero-img"><img src="assets/img/hero.jpg" alt="Pujya Gurudevshri seated before a relief of Param Krupalu Dev Shrimad Rajchandraji"></div>
         <div class="wrap"><div class="hero-copy fade-in">
           <p class="eyebrow">Param Krupalu Dev · Shrimad Rajchandraji</p>
-          <h1 class="display"><span>Śrī</span>Ātmasiddhi Śāstra</h1>
+          <h1 class="display"><span>Śrī</span>Ātmasiddhi<br>Śāstra</h1>
           <div class="orn left"><i>◆</i></div>
           <p class="lede">The six spiritual truths of the soul — one hundred and forty-two verses that reveal the path to liberation.</p>
           <p class="by">Studied through the satsangs of <b>Pujya Gurudevshri</b>. Every verse, every note, every answer — gathered here.</p>
