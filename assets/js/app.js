@@ -555,10 +555,14 @@
     if (e.key === "ArrowRight" && n < 142) location.hash = `#/verse/${n + 1}`;
     if (e.key === "ArrowLeft" && n > 1) location.hash = `#/verse/${n - 1}`;
   });
-  $("#menuBtn").addEventListener("click", () => {
-    const open = document.body.classList.toggle("menu-open");
+  const setMenu = (open) => {
+    document.body.classList.toggle("menu-open", open);
     $("#menuBtn").setAttribute("aria-expanded", open);
-  });
+  };
+  $("#menuBtn").addEventListener("click", () => setMenu(!document.body.classList.contains("menu-open")));
+  $("#scrim").addEventListener("click", () => setMenu(false));
+  $("#nav").addEventListener("click", (e) => { if (e.target.closest("a")) setMenu(false); });
+  addEventListener("keydown", (e) => { if (e.key === "Escape" && document.body.classList.contains("menu-open")) setMenu(false); });
   $("#toTop").addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
 
   // ------------------------------------------------------------------ AHO GURUDEV (music persists across pages)

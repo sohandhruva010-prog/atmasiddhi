@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Noto+Serif+Gujarati:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/style.css?v=13">
+  <link rel="stylesheet" href="assets/css/style.css?v=14">
   <link rel="preload" as="image" href="assets/img/hero.jpg?v=2">
 </head>
 <body>
@@ -23,16 +23,6 @@
       <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="29" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="32" cy="32" r="23" fill="none" stroke="currentColor" stroke-width=".8" opacity=".6"/><path d="M32 9l5.5 23L32 55l-5.5-23z" fill="currentColor"/><path d="M9 32l23-5.5L55 32l-23 5.5z" fill="currentColor" opacity=".35"/></svg>
       <span><b>ĀTMASIDDHI</b><small>a seeker's journey</small></span>
     </a>
-    <div class="player" id="player">
-      <button class="pl-btn" id="plBtn" aria-label="Play Aho Gurudev — instrumental" aria-pressed="false">
-        <img src="assets/img/aho-gurudev.jpg" alt="" width="46" height="46">
-        <svg class="pl-ring" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="22"/></svg>
-        <svg class="pl-ic play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z"/></svg>
-        <svg class="pl-ic pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h3.6v14H7zM13.4 5H17v14h-3.6z"/></svg>
-      </button>
-      <div class="pl-meta"><b>Aho Gurudev</b><small>Instrumental</small></div>
-      <div class="pl-eq" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
-    </div>
     <nav class="nav" id="nav" aria-label="Main">
       <a href="#/" data-r="home">Home</a>
       <a href="#/shastra" data-r="shastra">The Shastra</a>
@@ -41,8 +31,17 @@
       <a href="#/quizzes" data-r="quizzes">Quizzes</a>
       <a href="#/reflections" data-r="reflections">Reflections</a>
     </nav>
+    <div class="player" id="player">
+      <button class="pl-btn" id="plBtn" title="Aho Gurudev · Instrumental" aria-label="Play Aho Gurudev — instrumental" aria-pressed="false">
+        <img src="assets/img/aho-gurudev.jpg" alt="" width="46" height="46">
+        <svg class="pl-ring" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="22"/></svg>
+        <svg class="pl-ic play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z"/></svg>
+        <svg class="pl-ic pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h3.6v14H7zM13.4 5H17v14h-3.6z"/></svg>
+      </button>
+    </div>
     <button class="menu-btn" id="menuBtn" aria-label="Menu" aria-controls="nav" aria-expanded="false"><span></span><span></span><span></span></button>
   </header>
+  <div class="scrim" id="scrim" aria-hidden="true"></div>
 
   <main id="main" tabindex="-1"></main>
 
@@ -59,6 +58,6 @@
   <button class="to-top" id="toTop" aria-label="Back to top">↑</button>
   <audio id="audio" src="assets/audio/aho-gurudev-instrumental.mp3" preload="none" loop></audio>
 
-  <script src="assets/js/app.js?v=7"></script>
+  <script src="assets/js/app.js?v=8"></script>
 </body>
 </html>
