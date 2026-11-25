@@ -511,6 +511,60 @@
       </div>`;
     observe();
   }
+  // ------------------------------------------------------------------ MY JOURNEY · DIVINE INTERACTIONS
+  const fragCache = new Map();
+  const getFrag = (name) => {
+    if (!fragCache.has(name)) fragCache.set(name, fetch(`data/${name}.html`).then((r) => (r.ok ? r.text() : "")));
+    return fragCache.get(name);
+  };
+  async function journey() {
+    main.innerHTML = await getFrag("journey");
+  }
+  async function divine() {
+    main.innerHTML = pageHead("Moments with my Guru", "Divine Interactions", "Moments with my Guru, BAPA, as I remember them. As more come back to me, I will keep adding them here.") + await getFrag("divine");
+    const sig = { signal: ctl.signal };
+    // jump to a year or a moment without leaving the page
+    main.addEventListener("click", (e) => {
+      const a = e.target.closest("[data-go]");
+      if (!a) return;
+      e.preventDefault();
+      const el = document.getElementById(a.dataset.go);
+      if (!el) return;
+      // photos above may still be settling, so check the landing a few times
+      const go = (n) => { el.scrollIntoView({ behavior: "smooth", block: "start" }); if (n) setTimeout(() => { const off = el.getBoundingClientRect().top - parseFloat(getComputedStyle(el).scrollMarginTop); if (Math.abs(off) > 8) go(n - 1); }, 900); };
+      go(3);
+    }, sig);
+    // photos open large
+    const tiles = $$(".tile-btn", main), dlg = $("#diLb", main), im = $("#diLbImg", main), count = $("#diLbCount", main);
+    let i = 0;
+    const show = (n) => { i = (n + tiles.length) % tiles.length; im.src = tiles[i].dataset.full; im.alt = $("img", tiles[i]).alt; count.textContent = `${i + 1} / ${tiles.length}`; };
+    tiles.forEach((t, n) => t.addEventListener("click", () => { show(n); dlg.showModal ? dlg.showModal() : dlg.setAttribute("open", ""); }, sig));
+    const close = () => (dlg.close ? dlg.close() : dlg.removeAttribute("open"));
+    dlg.addEventListener("click", (e) => {
+      const b = e.target.closest("[data-lb]");
+      if (b) return b.dataset.lb === "close" ? close() : show(i + (b.dataset.lb === "next" ? 1 : -1));
+      if (e.target === dlg || e.target.classList.contains("di-lb-inner")) close();
+    }, sig);
+    dlg.addEventListener("keydown", (e) => { if (e.key === "ArrowLeft") show(i - 1); if (e.key === "ArrowRight") show(i + 1); }, sig);
+    // Aho Gurudev: the button here drives the site's player; it steps aside while a video plays
+    const au = $("#audio"), plBtn = $("#plBtn"), lb = $("#diListen", main);
+    const sync = () => { lb.innerHTML = au.paused ? "Play Aho Gurudev <span class=\"di-hint\">while you read</span>" : "Pause Aho Gurudev"; };
+    lb.addEventListener("click", () => plBtn.click(), sig);
+    au.addEventListener("play", sync, sig); au.addEventListener("pause", sync, sig); sync();
+    let ducked = false;
+    const videos = () => $$("video", main);
+    main.addEventListener("play", (e) => {
+      if (e.target.tagName !== "VIDEO") return;
+      videos().forEach((v) => v !== e.target && v.pause());
+      if (!au.paused) { ducked = true; plBtn.click(); }
+    }, { capture: true, signal: ctl.signal });
+    const resume = (e) => {
+      if (e.target.tagName !== "VIDEO") return;
+      setTimeout(() => { if (ducked && !videos().some((v) => !v.paused && !v.ended)) { ducked = false; if (au.paused) plBtn.click(); } }, 150);
+    };
+    main.addEventListener("pause", resume, { capture: true, signal: ctl.signal });
+    main.addEventListener("ended", resume, { capture: true, signal: ctl.signal });
+  }
   // ------------------------------------------------------------------ SVADHYAY — the whole Shastra in one flow
   const mmss = (t) => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, "0")}`;
   // The SRMD Bhakti recording keeps a steady beat: verse 1 begins with the first sung word (~1.5 s)
@@ -757,10 +811,10 @@
     window.scrollTo(0, 0);
     const views = {
       "": home, shastra, verses: () => versesIndex(a), verse: () => versePage(+a, b), satsangs, satsang: () => satsangPage(a),
-      quizzes: quizIndex, quiz: () => quizPage(a), reflections, course, svadhyay: () => svadhyay(+a),
+      quizzes: quizIndex, quiz: () => quizPage(a), reflections, course, svadhyay: () => svadhyay(+a), journey, divine,
     };
     await (views[r] || notFound)();
-    const titles = { "": "", verse: `Verse ${a}`, verses: "Verses", shastra: "The Shastra", satsangs: "Satsangs", satsang: "Satsang", quizzes: "Quizzes", quiz: "Quiz", reflections: "Reflections", course: "The Course", svadhyay: "Svādhyāy" };
+    const titles = { "": "", verse: `Verse ${a}`, verses: "Verses", shastra: "The Shastra", satsangs: "Satsangs", satsang: "Satsang", quizzes: "Quizzes", quiz: "Quiz", reflections: "Reflections", course: "The Course", svadhyay: "Svādhyāy", journey: "My Journey", divine: "Divine Interactions" };
     document.title = (titles[r] ? titles[r] + " · " : "") + "Shri Atmasiddhi Shastra · A Seeker's Journey";
     onScroll();
     observe();

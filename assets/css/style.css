@@ -673,3 +673,96 @@ body:has(.sv-dock) footer { padding-bottom: 110px; }
   .sv-modes .mode button { font-size: 10px; letter-spacing: .14em; padding: 9px 14px; }
 }
 @media (prefers-reduced-motion: reduce) { .sv-v { transition: none; } .sv.playing .sv-play, .sv-v.sung::after { animation: none; } }
+
+/* ------------------------------------------------------------- divine interactions */
+.di-intro { margin-top: -10px; }
+.di-counts { font-family: var(--display); font-size: 11px; letter-spacing: .3em; text-transform: uppercase; color: var(--muted); margin: 0; }
+.di-hint { opacity: .7; margin-left: .35em; }
+.di-film { display: grid; grid-template-columns: minmax(0, 340px) minmax(0, 1fr); gap: clamp(32px, 6vw, 80px); align-items: center; max-width: 920px; padding: clamp(56px, 8vw, 96px) 0; }
+.di-frame { position: relative; margin: 0; padding: 8px; border: 1px solid var(--line); border-radius: 22px; background: linear-gradient(165deg, rgba(214, 180, 108, .14), rgba(8, 20, 48, .5)); box-shadow: var(--shadow), 0 0 60px -20px rgba(214, 180, 108, .35); }
+.di-frame video { display: block; width: 100%; height: auto; aspect-ratio: 9 / 16; border-radius: 15px; background: #000; }
+.di-film-text .display { font-size: clamp(30px, 4vw, 46px); margin: 10px 0 0; }
+.di-film-text .lede { margin: 0; }
+.di-index { max-width: 920px; padding: 34px 0 30px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.di-index ol { list-style: none; margin: 18px 0 0; padding: 0; display: grid; gap: 12px; }
+.di-index li { display: grid; grid-template-columns: 90px 1fr; gap: 18px; align-items: baseline; }
+.toc-year { font-family: var(--display); font-size: 20px; letter-spacing: .1em; color: var(--gold-hi); }
+.toc-moments { display: flex; flex-wrap: wrap; gap: 4px 22px; font-family: var(--serif); font-style: italic; font-size: 19px; }
+.toc-moments a { color: var(--muted); transition: color .2s; }
+.toc-moments a:hover, .toc-year:hover { color: #fff; }
+
+.di-years { max-width: 1080px; }
+.di-years .year { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 0 48px; padding: clamp(60px, 8vw, 96px) 0 10px; scroll-margin-top: calc(70px + var(--sat)); }
+.di-years .year + .year { border-top: 1px solid var(--line-soft); }
+.year-num { position: sticky; top: calc(100px + var(--sat)); align-self: start; margin: 0; font-family: var(--display); font-weight: 500; font-size: 54px; line-height: 1; letter-spacing: .04em; color: var(--gold-hi); text-shadow: 0 0 30px rgba(214, 180, 108, .3); }
+.moments { display: grid; gap: 70px; min-width: 0; }
+.moment { min-width: 0; scroll-margin-top: calc(90px + var(--sat)); }
+.moment-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 16px; margin-bottom: 16px; }
+.moment-head h3 { margin: 0; font-family: var(--display); font-weight: 500; font-size: clamp(24px, 2.8vw, 32px); letter-spacing: .06em; line-height: 1.2; color: var(--gold-hi); }
+.moment .when { font-family: var(--display); font-size: 11px; letter-spacing: .3em; text-transform: uppercase; color: var(--gold); }
+.moment p { max-width: 720px; margin: 0 0 16px; }
+.moment p.lede { font-size: 24px; }
+.runin { font-family: var(--display); font-size: 11.5px; letter-spacing: .2em; text-transform: uppercase; color: var(--gold); margin-right: .45em; }
+.moment i[lang] { color: var(--mist); }
+.todo { display: inline-block; font-style: italic; color: var(--faint); padding: 6px 16px; border: 1px dashed var(--line); border-radius: 999px; }
+.moment .verse { max-width: 720px; margin: 24px 0 26px; padding: 26px 28px; text-align: center; border: 1px solid var(--line); border-radius: 18px; background: linear-gradient(165deg, rgba(214, 180, 108, .1), rgba(8, 20, 48, .4)); }
+.moment .verse p { margin: 0 auto 10px; font-family: var(--serif); font-style: italic; font-size: 23px; line-height: 1.55; color: var(--ivory); }
+.vno { font-family: var(--display); color: var(--gold); letter-spacing: .2em; }
+
+.gallery { columns: 3 220px; column-gap: 16px; margin: 30px 0 0; }
+.print { break-inside: avoid; position: relative; display: inline-block; width: 100%; margin: 0 0 16px; padding: 6px; vertical-align: top;
+  border: 1px solid var(--line-soft); border-radius: 16px; background: var(--card); box-shadow: 0 18px 40px -24px rgba(0, 0, 0, .9);
+  transition: transform .35s cubic-bezier(.2, .7, .2, 1), border-color .35s, box-shadow .35s; }
+.print:hover, .print:focus-within { transform: translateY(-4px); border-color: var(--line); box-shadow: 0 26px 50px -24px rgba(0, 0, 0, .95), 0 0 40px -18px rgba(214, 180, 108, .4); }
+.print img, .print video { display: block; width: 100%; height: auto; border-radius: 11px; background: var(--navy); }
+.print video { background: #000; }
+.tile-btn { all: unset; display: block; cursor: zoom-in; border-radius: 11px; }
+.tile-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+.hand { display: block; padding: 10px 8px 4px; font-family: var(--serif); font-style: italic; font-size: 17px; line-height: 1.35; color: var(--gold); text-align: center; }
+.print.feature { column-span: all; display: block; margin-bottom: 20px; }
+.print.feature .hand { font-size: 20px; }
+.gallery.solo { columns: auto; }
+.gallery.solo .print { width: min(100%, calc(var(--r) * 22rem + 14px), 36rem); }
+.gallery.solo .print.is-video { width: min(100%, calc(var(--r) * 30rem + 14px), 36rem); }
+.gallery.duo { columns: 2 220px; }
+.vlabel { position: absolute; left: 14px; top: 14px; z-index: 1; pointer-events: none; font-family: var(--display); font-size: 10px; letter-spacing: .12em; color: var(--gold-hi); background: rgba(5, 12, 29, .72); border: 1px solid var(--line); padding: 3px 9px; border-radius: 999px; }
+.di-frame .vlabel { left: 20px; top: 20px; }
+
+.di-closing { margin-top: 40px; border-top: 1px solid var(--line); }
+.di-closing p { font-family: var(--serif); font-size: 22px; line-height: 1.6; color: var(--text); margin: 0 0 18px; }
+.di-closing p:nth-of-type(3) { font-family: var(--display); font-size: clamp(20px, 2.4vw, 26px); letter-spacing: .04em; color: var(--gold-hi); line-height: 1.45; }
+.di-closing .credit { font-family: var(--display); font-size: 11px; letter-spacing: .24em; text-transform: uppercase; color: var(--faint); margin-top: 30px; }
+
+dialog.di-lb { border: 0; padding: 0; margin: 0; width: 100vw; height: 100vh; max-width: 100vw; max-height: 100vh; background: transparent; }
+dialog.di-lb::backdrop { background: rgba(3, 8, 20, .95); }
+.di-lb-inner { width: 100%; height: 100%; display: grid; place-items: center; padding: 64px 16px; }
+.di-lb img { max-width: 100%; max-height: calc(100vh - 128px); border-radius: 10px; box-shadow: 0 0 80px -20px rgba(214, 180, 108, .35); }
+.di-lb-btn { position: fixed; width: 46px; height: 46px; border-radius: 50%; border: 1px solid var(--line); background: rgba(6, 13, 31, .8); color: var(--gold-hi); font-size: 18px; cursor: pointer; display: grid; place-items: center; }
+.di-lb-btn:hover { background: rgba(214, 180, 108, .15); }
+.di-lb-btn.close { top: calc(16px + var(--sat)); right: 16px; }
+.di-lb-btn.prev { left: 16px; top: 50%; transform: translateY(-50%); }
+.di-lb-btn.next { right: 16px; top: 50%; transform: translateY(-50%); }
+.di-lb-count { position: fixed; left: 0; right: 0; bottom: calc(18px + env(safe-area-inset-bottom)); text-align: center; font-family: var(--display); font-size: 11px; letter-spacing: .2em; color: var(--muted); }
+
+@media (max-width: 760px) {
+  .di-film { grid-template-columns: minmax(0, 1fr); text-align: center; gap: 30px; padding: 48px 0 56px; }
+  .di-frame { width: min(100%, 300px); margin: 0 auto; }
+  .di-film-text .orn.left { justify-content: center; margin-left: auto; }
+  .di-index li { grid-template-columns: 62px 1fr; gap: 12px; }
+  .toc-year { font-size: 17px; }
+  .toc-moments { font-size: 17px; gap: 2px 16px; }
+  .di-years .year { grid-template-columns: minmax(0, 1fr); padding-top: 54px; }
+  .year-num { position: static; font-size: 40px; margin-bottom: 26px; }
+  .moments { gap: 54px; }
+  .moment p.lede { font-size: 21px; }
+  .moment .verse { padding: 20px 16px; }
+  .moment .verse p { font-size: 19px; }
+  .gallery { columns: 2; column-gap: 10px; margin-top: 22px; }
+  .print { padding: 4px; margin-bottom: 10px; border-radius: 12px; }
+  .print img, .print video, .tile-btn { border-radius: 9px; }
+  .hand { font-size: 15px; padding-top: 7px; }
+  .print.feature .hand { font-size: 17px; }
+  .vlabel { left: 10px; top: 10px; }
+  .di-closing p { font-size: 20px; }
+  .di-lb-btn.prev, .di-lb-btn.next { top: auto; bottom: calc(8px + env(safe-area-inset-bottom)); transform: none; }
+}
