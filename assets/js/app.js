@@ -789,7 +789,12 @@
   };
   $("#menuBtn").addEventListener("click", () => setMenu(!document.body.classList.contains("menu-open")));
   $("#scrim").addEventListener("click", () => setMenu(false));
-  $("#nav").addEventListener("click", (e) => { if (e.target.closest("a")) setMenu(false); });
+  $("#nav").addEventListener("click", (e) => { if (e.target.closest("a")) { setMenu(false); setMore(false); } });
+  // "My Journey" menu: opens on hover with a mouse, on tap otherwise
+  const setMore = (open) => { $(".nav-group").classList.toggle("open", open); $("#navMore").setAttribute("aria-expanded", open); };
+  $("#navMore").addEventListener("click", () => setMore(!$(".nav-group").classList.contains("open")));
+  document.addEventListener("click", (e) => { if (!e.target.closest(".nav-group")) setMore(false); });
+  addEventListener("keydown", (e) => { if (e.key === "Escape") setMore(false); });
   addEventListener("keydown", (e) => { if (e.key === "Escape" && document.body.classList.contains("menu-open")) setMenu(false); });
   $("#toTop").addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
 

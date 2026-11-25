@@ -20,7 +20,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Noto+Serif+Gujarati:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/css/style.css?v=22">
+  <link rel="stylesheet" href="assets/css/style.css?v=23">
   <link rel="preload" as="image" href="assets/img/hero.jpg?v=2">
 </head>
 <body>
@@ -38,7 +38,14 @@
       <a href="#/satsangs" data-r="satsangs">Satsangs</a>
       <a href="#/quizzes" data-r="quizzes">Quizzes</a>
       <a href="#/reflections" data-r="reflections">Reflections</a>
-      <a href="#/course" data-r="course">The Course</a>
+      <div class="nav-group">
+        <button class="nav-more" id="navMore" type="button" aria-expanded="false" aria-controls="navSub">My Journey<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+        <div class="nav-sub" id="navSub">
+          <a href="journey/">The Journey</a>
+          <a href="#/course" data-r="course">The Course</a>
+          <a href="divine/">Divine Interactions</a>
+        </div>
+      </div>
     </nav>
     <div class="player" id="player">
       <button class="pl-btn" id="plBtn" title="Aho Gurudev · Instrumental" aria-label="Play Aho Gurudev — instrumental" aria-pressed="false">
@@ -68,6 +75,6 @@
   <audio id="sAudio" preload="none" src="assets/audio/atmasiddhi-shastra-srmd-bhakti.m4a"></audio>
   <audio id="audio" src="assets/audio/aho-gurudev-instrumental.mp3" preload="none" loop></audio>
 
-  <script src="assets/js/app.js?v=15"></script>
+  <script src="assets/js/app.js?v=16"></script>
 </body>
 </html>
