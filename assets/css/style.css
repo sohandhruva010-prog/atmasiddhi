@@ -260,7 +260,55 @@ main { min-height: 100vh; }
 .vod-done.on { background: rgba(214, 180, 108, .12); border-color: var(--gold); color: var(--gold-hi); cursor: default; }
 .vod-done.on .tick { background: linear-gradient(180deg, #f6e2ad, #d3ad5f); }
 .vod-done.on .tick svg { opacity: 1; }
-.vod-streak { margin: 0; font-size: 14.5px; color: var(--faint); }
+.vod-streak { margin: 0; font-size: 14.5px; color: var(--faint); max-width: 520px; }
+.vod-check .btn { padding: 15px 30px; }
+p.vod-done { margin: 0; cursor: default; }
+.linkish { border: 0; background: none; padding: 0; cursor: pointer; color: var(--gold); font: inherit; text-decoration: underline; text-underline-offset: 3px; }
+.linkish:hover { color: var(--gold-hi); }
+/* studying one verse */
+.vst { margin-top: 30px; padding: 24px clamp(14px, 3vw, 28px) 20px; border: 1px solid var(--line); border-radius: 6px; background: rgba(6, 13, 31, .55); text-align: center; scroll-margin: 90px; }
+.vst-steps { display: flex; justify-content: center; flex-wrap: wrap; gap: 6px 18px; margin-bottom: 20px; font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--faint); font-family: var(--display); }
+.vst-steps span::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 99px; border: 1px solid var(--faint); margin-right: 7px; vertical-align: 1px; }
+.vst-steps .on { color: var(--gold-hi); }
+.vst-steps .on::before { border-color: var(--gold); background: var(--gold); }
+.vst-steps .done::before { border-color: var(--gold); background: rgba(214, 180, 108, .4); }
+.vst-ask { margin: 0 0 16px; font-family: var(--serif); font-style: italic; font-size: 19px; color: var(--ivory); }
+.vst button:not(.btn):not(.linkish) { cursor: pointer; border: 1px solid var(--line); border-radius: 6px; background: rgba(6, 13, 31, .6); color: var(--ivory); padding: 10px 12px; font-size: 16px; line-height: 1.35; transition: border-color .15s, background .15s; }
+.vst button:not(.btn):not(.linkish):hover { border-color: var(--gold); }
+.vst button.sel { border-color: var(--gold); background: rgba(214, 180, 108, .16); color: var(--gold-hi); }
+.vst button.ok, .vst button.ok:disabled { border-color: rgba(214, 180, 108, .5); background: rgba(214, 180, 108, .22); color: var(--gold-hi); cursor: default; }
+.vst button.no { border-color: #b45f5f; animation: vst-no .35s; }
+@keyframes vst-no { 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
+.vst-match { display: grid; grid-template-columns: 1fr 1.3fr; gap: 12px; text-align: left; }
+.vst-match > div { display: flex; flex-direction: column; gap: 8px; }
+.vst-match > div:first-child button { font-family: var(--serif); font-style: italic; font-size: 17.5px; }
+.vst-line { margin: 18px 0 10px; color: var(--ivory); }
+.vst-line.gu { font-family: var(--gu); font-size: clamp(20px, 2.6vw, 27px); line-height: 1.7; }
+.vst-line.iast { font-family: var(--serif); font-style: italic; font-size: clamp(19px, 2.2vw, 23px); color: var(--mist); }
+.vst-line .gap { display: inline-block; min-width: 3.5em; border-bottom: 2px solid var(--gold); color: var(--gold); }
+.vst-line .fill { color: var(--gold-hi); border-bottom: 2px solid rgba(214, 180, 108, .5); }
+.vst-opts { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.vst-opts.gu button { font-family: var(--gu); font-size: 19px; }
+.vst-opts.iast button { font-family: var(--serif); font-style: italic; font-size: 18px; }
+.vst-mean { display: flex; flex-direction: column; gap: 10px; text-align: left; }
+.vst-mean button { font-size: 16.5px !important; padding: 14px 16px !important; }
+.vst-yes { margin: 18px 0 4px; color: var(--gold-hi); font-family: var(--display); font-size: 12px; letter-spacing: .2em; text-transform: uppercase; }
+.vst-full { margin: 0; color: var(--muted); font-size: 17px; }
+.vst-verse { color: var(--ivory); margin: 6px 0; }
+.vst-verse.gu { font-family: var(--gu); font-size: clamp(22px, 3vw, 32px); line-height: 1.75; }
+.vst-verse.iast { font-family: var(--serif); font-style: italic; font-size: clamp(20px, 2.4vw, 26px); line-height: 1.6; color: var(--mist); }
+.vst-note { margin: 14px 0 0; color: var(--faint); font-size: 15px; }
+.vst-foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--line-soft); }
+.vst-hint { font-size: 13.5px; color: var(--faint); }
+@media (max-width: 640px) {
+  .vst-match { grid-template-columns: 1fr; }
+  .vst-steps { gap: 4px 12px; font-size: 10.5px; }
+}
+/* salutation to Param Krupalu Dev */
+.homage { margin-top: 26px; padding: 16px 0 2px 20px; border-left: 2px solid var(--gold); max-width: 560px; }
+.homage .gu { margin: 0 0 8px; font-family: var(--gu); font-size: clamp(20px, 2.2vw, 25px); color: var(--gold-hi); line-height: 1.5; }
+.homage p:last-child { margin: 0; font-family: var(--serif); font-size: 18px; line-height: 1.55; color: var(--ivory); text-shadow: 0 1px 12px rgba(5, 12, 29, .9); }
+.homage b { color: var(--gold-hi); font-weight: 600; }
 .vod-streak b { color: var(--gold-hi); font-weight: 600; }
 
 /* memorise + my progress */

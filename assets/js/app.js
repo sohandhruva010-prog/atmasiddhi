@@ -140,7 +140,7 @@
   // the short meaning, without the word-by-word glossary lines some verses carry
   const vodMeaning = (v) => v.short.filter((x) => !/\S\s=\s\S/.test(x)).join(" ").replace(/\s*[)\]]\s*[(\[]\s*$/, "").trim();
 
-  function vodCard(day, daily) {
+  function vodCard(day, daily, studying) {
     const n = vodVerse(day), v = SITE.verses[n - 1], s = sec(v.section), d = daily[n - 1] || {};
     const today = dayNo(), off = day - today;
     const when = off === 0 ? "Today" : off === -1 ? "Yesterday" : off === 1 ? "Tomorrow" : vodDate(day).toLocaleDateString(undefined, { weekday: "long" });
@@ -162,14 +162,14 @@
           <a class="vod-more" href="#/verse/${n}/notes">Read the full notes →</a></div>
         <div><p class="vod-k">Sit with this</p><p class="vod-q">${esc(d.ask)}</p></div>
       </div>` : ""}
-      ${(() => {
-        const done = !!study().studied[n] && (study().days[ymd()] || []).includes(n), k = streak();
+      ${studying ? `<div class="vst" id="vodStudy"></div>` : (() => {
+        const done = (study().days[ymd()] || []).includes(n), k = streak();
         return `<div class="vod-check">
-          <button class="vod-done${done ? " on" : ""}" id="vodDone" type="button" aria-pressed="${done}">
-            <span class="tick" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
-            <span>${done ? "Studied today" : "I've studied this verse"}</span>
-          </button>
-          <p class="vod-streak">${k ? `<b>${k}</b> day${k > 1 ? "s" : ""} in a row` : "One tap after you read it. It goes into your memorising."}</p>
+          ${done
+            ? `<p class="vod-done on"><span class="tick" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span>Studied today</span></p>
+               <p class="vod-streak">${k ? `<b>${k}</b> day${k > 1 ? "s" : ""} in a row · ` : ""}Verse ${n} is in your <a href="#/memorise">Memorise</a> list · <button class="linkish" data-st="open">study it again</button></p>`
+            : `<button class="btn" data-st="open" type="button">Study this verse</button>
+               <p class="vod-streak">About three minutes: its words, completing the verse, what Param Krupalu Dev is saying, and one recitation.${k ? ` · <b>${k}</b> day${k > 1 ? "s" : ""} in a row` : ""}</p>`}
         </div>`;
       })()}
       <div class="cta">
@@ -180,19 +180,94 @@
       <p class="vod-count">Day ${n} of 142 · one verse a day, the whole Shastra in 142 days</p>`;
   }
 
+  // ---- studying one verse: four short steps, all by tapping
+  const shuffle = (a) => { a = [...a]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  const bare = (w) => w.replace(/^[\s,;.:!?'"‘’“”()]+|[\s,;.:!?'"‘’“”()]+$/g, "");
+  const trWords = (v) => new Set(v.tr.join(" ").toLowerCase().match(/[a-z]{3,}/g) || []);
+  const sameish = (a, b) => { const A = trWords(a), B = trWords(b); let k = 0; A.forEach((w) => B.has(w) && k++); return k / Math.max(1, Math.min(A.size, B.size)) > 0.45; };
+  const gist = (v) => {
+    let out = "";
+    for (const x of vodMeaning(v).split(/(?<=[.!?])\s+/)) { if (out.length > 70) break; out += (out ? " " : "") + x; }
+    return out.length > 210 ? out.slice(0, 200).replace(/\s+\S*$/, "") + "…" : out;
+  };
+  function newStudy(n) {
+    const v = SITE.verses[n - 1], scr = study().pref.script === "iast" ? "iast" : "gu";
+    // 1. words: up to four word-meaning pairs
+    const seen = new Set(), ws = shuffle(v.words.filter(([a]) => !seen.has(a) && seen.add(a))).slice(0, 4)
+      .map(([a, b]) => [a, b.length > 46 ? b.slice(0, 44).replace(/\s+\S*$/, "") + "…" : b]);
+    const right = shuffle(ws.map((_, i) => i));
+    // 2. one missing word in each line, chosen from four
+    const near = SITE.verses.filter((x) => x.n !== n && Math.abs(x.n - n) <= 12);
+    const blanks = v[scr].map((line, li) => {
+      const toks = line.split(/\s+/), cand = toks.map((t, i) => [bare(t), i]).filter(([t]) => t.length >= 3);
+      const [ans, idx] = cand.length ? cand[Math.floor(Math.random() * cand.length)] : [bare(toks[0]), 0];
+      const pool = shuffle([...new Set(near.flatMap((x) => (x[scr][li] || "").split(/\s+/).map(bare)).filter((t) => t.length >= 3 && t !== ans))]);
+      return { toks, idx, ans, opts: shuffle([ans, ...pool.slice(0, 3)]), done: false, miss: -1 };
+    });
+    // 3. what is He saying: the meaning, beside two from nearby verses
+    const sec0 = v.section;
+    const others = shuffle(SITE.verses.filter((x) => x.n !== n && (x.section === sec0 || Math.abs(x.n - n) <= 8) && !sameish(x, v) && gist(x) !== gist(v)));
+    const mopts = shuffle([{ t: gist(v), ok: true }, ...others.slice(0, 2).map((x) => ({ t: gist(x), ok: false }))]);
+    return { n, scr, step: 0, ws, right, sel: -1, matched: [], miss: -1, blanks, mopts, picked: -1 };
+  }
+  const STEPS = ["The words", "Complete the verse", "What is He saying?", "Recite it"];
+  function studyPanel(sx) {
+    const v = SITE.verses[sx.n - 1];
+    const dots = STEPS.map((t, i) => `<span class="${i < sx.step ? "done" : i === sx.step ? "on" : ""}">${t}</span>`).join("");
+    let body = "", ready = false;
+    if (sx.step === 0) {
+      ready = sx.matched.length === sx.ws.length;
+      body = `<p class="vst-ask">Tap a word, then its meaning.</p>
+        <div class="vst-match"><div>${sx.ws.map(([a], i) => `<button data-st="w" data-i="${i}" class="${sx.matched.includes(i) ? "ok" : sx.sel === i ? "sel" : ""}"${sx.matched.includes(i) ? " disabled" : ""}>${esc(a)}</button>`).join("")}</div>
+        <div>${sx.right.map((i) => `<button data-st="m" data-i="${i}" class="${sx.matched.includes(i) ? "ok" : sx.miss === i ? "no" : ""}"${sx.matched.includes(i) ? " disabled" : ""}>${esc(sx.ws[i][1])}</button>`).join("")}</div></div>`;
+    } else if (sx.step === 1) {
+      ready = sx.blanks.every((b) => b.done);
+      body = `<p class="vst-ask">Fill in the missing word in each line.</p>
+        ${sx.blanks.map((b, li) => `<div class="vst-line ${sx.scr}">${b.toks.map((t, i) => i === b.idx ? (b.done ? `<span class="fill">${t}</span>` : `<span class="gap">&nbsp;?&nbsp;</span>${t.replace(bare(t), "")}`) : t).join(" ")}</div>
+          ${b.done ? "" : `<div class="vst-opts ${sx.scr}">${b.opts.map((o, j) => `<button data-st="b" data-l="${li}" data-j="${j}" class="${b.miss === j ? "no" : ""}">${esc(o)}</button>`).join("")}</div>`}`).join("")}`;
+    } else if (sx.step === 2) {
+      ready = sx.picked >= 0 && sx.mopts[sx.picked].ok;
+      body = `<p class="vst-ask">In this verse, what is Param Krupalu Dev saying?</p>
+        <div class="vst-mean">${sx.mopts.map((o, i) => `<button data-st="mo" data-i="${i}" class="${i === sx.picked ? (o.ok ? "ok" : "no") : ""}"${ready ? " disabled" : ""}>${esc(o.t)}</button>`).join("")}</div>
+        ${ready ? `<p class="vst-yes">Yes. ${sx.mopts.length > 1 ? "Read the full meaning once more:" : ""}</p><p class="vst-full">${esc(vodMeaning(v))}</p>` : ""}`;
+    } else {
+      ready = true;
+      body = `<p class="vst-ask">Now say the whole verse once, slowly, aloud or in your mind.</p>
+        <div class="vst-verse ${sx.scr}">${v[sx.scr].join("<br>")}</div>
+        <p class="vst-note">Then close your eyes and try it once without looking.</p>`;
+    }
+    const last = sx.step === STEPS.length - 1;
+    return `<div class="vst-steps">${dots}</div>${body}
+      <div class="vst-foot"><button class="linkish" data-st="close">Close</button>
+        ${ready ? `<button class="btn sm" data-st="${last ? "finish" : "next"}">${last ? "I've recited it" : "Next"}</button>` : `<span class="vst-hint">${sx.step + 1} of ${STEPS.length}</span>`}</div>`;
+  }
+
   async function verseOfDay() {
     const box = $("#vod"); if (!box) return;
     const daily = await getDaily();
-    let day = dayNo();
-    const draw = () => { box.innerHTML = vodCard(day, daily); };
+    let day = dayNo(), sx = null;
+    const drawStudy = () => { const p = $("#vodStudy"); if (p && sx) p.innerHTML = studyPanel(sx); };
+    const draw = () => { box.innerHTML = vodCard(day, daily, !!sx); drawStudy(); };
     draw();
     box.addEventListener("click", async (e) => {
       const b = e.target.closest("[data-vod]");
-      if (b) { const k = +b.dataset.vod; day = k ? day + k : dayNo(); draw(); return; }
-      if (e.target.closest("#vodDone")) {
-        const n = vodVerse(day);
-        if (!(study().days[ymd()] || []).includes(n)) markStudied(n);
-        draw(); return;
+      if (b) { const k = +b.dataset.vod; day = k ? day + k : dayNo(); sx = null; draw(); return; }
+      const t = e.target.closest("[data-st]");
+      if (t) {
+        const a = t.dataset.st, i = +t.dataset.i;
+        if (a === "open") { sx = newStudy(vodVerse(day)); draw(); $("#vodStudy").scrollIntoView({ behavior: "smooth", block: "center" }); return; }
+        if (a === "close") { sx = null; draw(); return; }
+        if (a === "w") sx.sel = i;
+        else if (a === "m") {
+          if (sx.sel < 0) return;
+          if (sx.sel === i) { sx.matched.push(i); sx.sel = -1; sx.miss = -1; } else sx.miss = i;
+        } else if (a === "b") {
+          const bl = sx.blanks[+t.dataset.l], j = +t.dataset.j;
+          if (bl.opts[j] === bl.ans) bl.done = true; else bl.miss = j;
+        } else if (a === "mo") sx.picked = i;
+        else if (a === "next") sx.step++;
+        else if (a === "finish") { markStudied(sx.n); sx = null; draw(); return; }
+        drawStudy(); return;
       }
       if (!e.target.closest("#vodShare")) return;
       const n = vodVerse(day), v = SITE.verses[n - 1], d = daily[n - 1] || {};
@@ -403,6 +478,10 @@
           <h1 class="display"><span>Śrī</span>Ātmasiddhi<br>Śāstra</h1>
           <div class="orn left"><i>◆</i></div>
           <p class="lede">The six spiritual truths of the soul — one hundred and forty-two verses that reveal the path to liberation.</p>
+          <div class="homage">
+            <p class="gu">${esc(v142.gu[1].replace(/[.]$/, ""))} ॥</p>
+            <p>Countless salutations at the Lotus Feet of <b>Param Krupalu Dev</b>, the Enlightened One, the Guru of my Guru, who poured out all one hundred and forty-two verses in a single sitting of about ninety minutes, by lantern light at Nadiad.</p>
+          </div>
           <p class="by">Received through the satsangs of <b>Param Pujya Gurudevshri Rakeshji</b>, our beloved <b>Bapaji</b>, and offered at His Lotus Feet — every verse, every note, every answer.</p>
           <div class="cta"><a class="btn" href="#/verse/1">Begin with Verse 1</a><a class="btn ghost" href="#/verses">All 142 verses</a></div>
         </div></div>
