@@ -96,8 +96,71 @@
     } else $(".toc", el).remove();
   }
 
+  // ------------------------------------------------------------------ VERSE OF THE DAY
+  // One verse a day, in order: 26 November 2026 is Verse 1, and the cycle of 142 repeats.
+  // Everyone sees the same verse on the same calendar day; it turns over at local midnight.
+  let DAILY = null;
+  const getDaily = () => DAILY || (DAILY = fetch("data/daily.json").then((r) => r.json()).catch(() => []));
+  const VOD_START = Date.UTC(2026, 10, 26);
+  const dayNo = (d = new Date()) => Math.floor((Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) - VOD_START) / 864e5);
+  const vodVerse = (day) => ((day % 142) + 142) % 142 + 1;
+  const vodDate = (day) => { const t = new Date(VOD_START + day * 864e5); return new Date(t.getUTCFullYear(), t.getUTCMonth(), t.getUTCDate()); };
+  // the short meaning, without the word-by-word glossary lines some verses carry
+  const vodMeaning = (v) => v.short.filter((x) => !/\S\s=\s\S/.test(x)).join(" ").replace(/\s*[)\]]\s*[(\[]\s*$/, "").trim();
+
+  function vodCard(day, daily) {
+    const n = vodVerse(day), v = SITE.verses[n - 1], s = sec(v.section), d = daily[n - 1] || {};
+    const today = dayNo(), off = day - today;
+    const when = off === 0 ? "Today" : off === -1 ? "Yesterday" : off === 1 ? "Tomorrow" : vodDate(day).toLocaleDateString(undefined, { weekday: "long" });
+    const date = vodDate(day).toLocaleDateString(undefined, { day: "numeric", month: "long", year: "numeric" });
+    return `
+      <div class="vod-top">
+        <button class="vod-step" data-vod="-1" aria-label="Previous day's verse"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+        <div class="vod-when"><p class="eyebrow">Verse of the Day</p><p class="vod-date"><b>${when}</b> · ${date}</p></div>
+        <button class="vod-step" data-vod="1" aria-label="Next day's verse"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+      </div>
+      <p class="vnum">VERSE ${n}${v.title ? " · " + esc(v.title.toUpperCase()) : ""}</p>
+      <a class="vod-sec" href="#/verses/${s.id}">${secLabel(s)} · ${esc(s.name)}</a>
+      <div class="gu-verse gu">${v.gu.join("<br>")}</div>
+      <div class="iast">${v.iast.join("<br>")}</div>
+      ${orn()}
+      <p class="meaning">${esc(vodMeaning(v))}</p>
+      ${d.carry ? `<div class="vod-take">
+        <div><p class="vod-k">Carry it today</p><p>${esc(d.carry)}</p></div>
+        <div><p class="vod-k">Sit with this</p><p class="vod-q">${esc(d.ask)}</p></div>
+      </div>` : ""}
+      <div class="cta">
+        <a class="btn sm" href="#/verse/${n}">Read Verse ${n} with notes</a>
+        <button class="btn ghost sm" id="vodShare" type="button">Share</button>
+        ${off ? `<button class="btn ghost sm" data-vod="0" type="button">Back to today</button>` : ""}
+      </div>
+      <p class="vod-count">Day ${n} of 142 · one verse a day, the whole Shastra in 142 days</p>`;
+  }
+
+  async function verseOfDay() {
+    const box = $("#vod"); if (!box) return;
+    const daily = await getDaily();
+    let day = dayNo();
+    const draw = () => { box.innerHTML = vodCard(day, daily); };
+    draw();
+    box.addEventListener("click", async (e) => {
+      const b = e.target.closest("[data-vod]");
+      if (b) { const k = +b.dataset.vod; day = k ? day + k : dayNo(); draw(); return; }
+      if (!e.target.closest("#vodShare")) return;
+      const n = vodVerse(day), v = SITE.verses[n - 1], d = daily[n - 1] || {};
+      const url = location.href.split("#")[0] + "#/verse/" + n;
+      const text = `Verse of the Day · Shri Atmasiddhi Shastra, Verse ${n}\n\n${v.tr.join("\n")}\n\n${vodMeaning(v)}${d.carry ? "\n\nCarry it today: " + d.carry + "\nSit with this: " + d.ask : ""}`;
+      const btn = $("#vodShare");
+      try {
+        if (navigator.share) await navigator.share({ title: `Verse ${n} · Shri Atmasiddhi Shastra`, text, url });
+        else { await navigator.clipboard.writeText(text + "\n\n" + url); btn.textContent = "Copied"; setTimeout(() => (btn.textContent = "Share"), 1800); }
+      } catch (_) { /* the share sheet was closed */ }
+    }, { signal: ctl.signal });
+  }
+
   // ------------------------------------------------------------------ HOME
-  function home() {
+  async function home() {
+    await getDaily();
     const v1 = SITE.verses[0], v142 = SITE.verses[141], st = SITE.stats;
     const path = SITE.sections.map((s) => `
       <a class="pcard reveal${s.n ? "" : " prelude"}" href="${s.n ? "#/verses/" + s.id : "#/shastra"}">
@@ -118,6 +181,8 @@
           <div class="cta"><a class="btn" href="#/verse/1">Begin with Verse 1</a><a class="btn ghost" href="#/verses">All 142 verses</a></div>
         </div></div>
       </section>
+
+      <section class="section vod-sec-wrap"><div class="read"><div class="frame vod reveal" id="vod" aria-live="polite"></div></div></section>
 
       <section class="section showcase"><div class="read">
         <p class="vnum reveal">VERSE I · ${esc(v1.title.toUpperCase())}</p>
@@ -185,6 +250,7 @@
         <p class="meaning reveal">${esc(v142.short.join(" "))}</p>
         <div class="cta reveal" style="justify-content:center"><a class="btn" href="#/reflections">Reflections</a><a class="btn ghost" href="#/quizzes">The Quizzes</a></div>
       </div></section>`;
+    await verseOfDay();
   }
 
   // ------------------------------------------------------------------ THE SHASTRA

@@ -225,6 +225,35 @@ main { min-height: 100vh; }
 
 /* ------------------------------------------------------------- verse showcase */
 .showcase { text-align: center; }
+/* verse of the day */
+.vod-sec-wrap { padding-bottom: 0; }
+.vod { text-align: center; }
+.vod-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 26px; }
+.vod-when .eyebrow { margin: 0 0 6px; }
+.vod-date { margin: 0; font-family: var(--serif); font-size: 17px; color: var(--muted); }
+.vod-date b { color: var(--ivory); font-weight: 600; }
+.vod-step { flex: none; width: 42px; height: 42px; border-radius: 999px; border: 1px solid var(--line); background: none; cursor: pointer; display: grid; place-items: center; color: var(--gold-hi); transition: background .2s, border-color .2s; }
+.vod-step:hover { background: rgba(214, 180, 108, .1); border-color: var(--gold); }
+.vod-step svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.vod-sec { display: inline-block; margin-top: 8px; font-family: var(--serif); font-style: italic; font-size: 16px; color: var(--faint); }
+.vod-sec:hover { color: var(--gold-hi); }
+.vod .gu-verse { font-family: var(--gu); font-size: clamp(24px, 3.2vw, 38px); line-height: 1.7; color: var(--ivory); margin: 18px 0 8px; }
+.vod .iast { font-family: var(--serif); font-style: italic; font-size: clamp(19px, 2vw, 24px); color: var(--mist); }
+.vod .meaning { max-width: 640px; margin: 22px auto 0; color: var(--muted); font-size: 18.5px; }
+.vod-take { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; margin: 34px 0 0; border: 1px solid var(--line-soft); border-radius: 4px; overflow: hidden; background: var(--line-soft); text-align: left; }
+.vod-take > div { padding: 22px 24px; background: rgba(6, 13, 31, .55); }
+.vod-take p { margin: 0; font-size: 17.5px; color: var(--ivory); line-height: 1.55; }
+.vod-take .vod-k { font-family: var(--display); font-size: 11px; letter-spacing: .3em; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
+.vod-take .vod-q { font-family: var(--serif); font-style: italic; font-size: 20px; color: var(--gold-hi); }
+.vod .cta { justify-content: center; margin-top: 30px; }
+.vod-count { margin: 22px 0 0; font-size: 14px; color: var(--faint); letter-spacing: .04em; }
+@media (max-width: 640px) {
+  .vod-take { grid-template-columns: 1fr; }
+  .vod-take > div { padding: 18px 18px; }
+  .vod-top { margin-bottom: 18px; }
+  .vod-step { width: 38px; height: 38px; }
+  .vod .gu-verse { font-size: min(5.2vw, 24px); }
+}
 .showcase .gu-verse { font-family: var(--gu); font-size: clamp(26px, 3.6vw, 44px); line-height: 1.7; color: var(--ivory); margin: 10px 0 8px; }
 .showcase .iast { font-family: var(--serif); font-style: italic; font-size: clamp(20px, 2.2vw, 26px); color: var(--mist); }
 .showcase .meaning { max-width: 640px; margin: 22px auto 0; color: var(--muted); font-size: 19px; }
