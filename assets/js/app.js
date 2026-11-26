@@ -569,7 +569,7 @@
           <div class="fact"><b>1896</b><span>22 October · Aso Vad Ekam, V.S. 1952</span></div>
           <div class="fact"><b>Nadiad</b><span>Charotar, Gujarat</span></div>
           <div class="fact"><b>142</b><span>verses in the dohā metre</span></div>
-          <div class="fact"><b>One Sitting</b><span>about two hours, by lantern light</span></div>
+          <div class="fact"><b>One Sitting</b><span>about ninety minutes, by lantern light</span></div>
         </div>
       </section>
       <section class="section" style="padding-bottom:20px"><div class="wrap">
