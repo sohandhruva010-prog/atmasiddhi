@@ -96,6 +96,38 @@
     } else $(".toc", el).remove();
   }
 
+  // ------------------------------------------------------------------ MY STUDY RECORD
+  // Kept only in this browser (or this home-screen app): days studied, verses studied, and memorisation.
+  const ST_KEY = "atmasiddhi.study.v1";
+  let STUDY = null;
+  const ymd = (d = new Date()) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  const addDays = (k, n) => { const [y, m, d] = k.split("-").map(Number); return ymd(new Date(y, m - 1, d + n)); };
+  const study = () => {
+    if (STUDY) return STUDY;
+    try { STUDY = JSON.parse(localStorage.getItem(ST_KEY)) || {}; } catch (_) { STUDY = {}; }
+    for (const k of ["days", "studied", "mem", "pref"]) if (!STUDY[k] || typeof STUDY[k] !== "object") STUDY[k] = {};
+    return STUDY;
+  };
+  const saveStudy = () => { try { localStorage.setItem(ST_KEY, JSON.stringify(STUDY)); } catch (_) { /* private mode */ } };
+  // memorisation: box 0 = new; each "knew it" moves a verse up a box and further out in time
+  const GAP = [0, 1, 2, 4, 8, 16, 32, 64];
+  const KNOWN = 5; // after five spaced recalls (about two weeks) a verse counts as memorised
+  const memState = (n) => { const m = study().mem[n]; return !m ? "new" : m.box >= KNOWN ? "known" : "learning"; };
+  const isDue = (n) => { const m = study().mem[n]; return !!m && m.due <= ymd(); };
+  function markStudied(n) {
+    const st = study(), t = ymd();
+    st.days[t] = [...new Set([...(st.days[t] || []), n])];
+    if (!st.studied[n]) st.studied[n] = t;
+    if (!st.mem[n]) st.mem[n] = { box: 0, due: t };
+    saveStudy();
+  }
+  function streak() {
+    const st = study(); let d = ymd(), k = 0;
+    if (!st.days[d]) d = addDays(d, -1);
+    while (st.days[d]) { k++; d = addDays(d, -1); }
+    return k;
+  }
+
   // ------------------------------------------------------------------ VERSE OF THE DAY
   // One verse a day, in order: 26 November 2026 is Verse 1, and the cycle of 142 repeats.
   // Everyone sees the same verse on the same calendar day; it turns over at local midnight.
@@ -125,10 +157,21 @@
       <div class="iast">${v.iast.join("<br>")}</div>
       ${orn()}
       <p class="meaning">${esc(vodMeaning(v))}</p>
-      ${d.carry ? `<div class="vod-take">
-        <div><p class="vod-k">Carry it today</p><p>${esc(d.carry)}</p></div>
+      ${d.point ? `<div class="vod-take">
+        <div><p class="vod-k">From Bapaji's satsang</p>${d.lead ? `<p class="vod-lead">${esc(d.lead)}</p>` : ""}<p class="vod-pt">${esc(d.point)}</p>
+          <a class="vod-more" href="#/verse/${n}/notes">Read the full notes →</a></div>
         <div><p class="vod-k">Sit with this</p><p class="vod-q">${esc(d.ask)}</p></div>
       </div>` : ""}
+      ${(() => {
+        const done = !!study().studied[n] && (study().days[ymd()] || []).includes(n), k = streak();
+        return `<div class="vod-check">
+          <button class="vod-done${done ? " on" : ""}" id="vodDone" type="button" aria-pressed="${done}">
+            <span class="tick" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
+            <span>${done ? "Studied today" : "I've studied this verse"}</span>
+          </button>
+          <p class="vod-streak">${k ? `<b>${k}</b> day${k > 1 ? "s" : ""} in a row` : "One tap after you read it. It goes into your memorising."}</p>
+        </div>`;
+      })()}
       <div class="cta">
         <a class="btn sm" href="#/verse/${n}">Read Verse ${n} with notes</a>
         <button class="btn ghost sm" id="vodShare" type="button">Share</button>
@@ -146,15 +189,198 @@
     box.addEventListener("click", async (e) => {
       const b = e.target.closest("[data-vod]");
       if (b) { const k = +b.dataset.vod; day = k ? day + k : dayNo(); draw(); return; }
+      if (e.target.closest("#vodDone")) {
+        const n = vodVerse(day);
+        if (!(study().days[ymd()] || []).includes(n)) markStudied(n);
+        draw(); return;
+      }
       if (!e.target.closest("#vodShare")) return;
       const n = vodVerse(day), v = SITE.verses[n - 1], d = daily[n - 1] || {};
       const url = location.href.split("#")[0] + "#/verse/" + n;
-      const text = `Verse of the Day · Shri Atmasiddhi Shastra, Verse ${n}\n\n${v.tr.join("\n")}\n\n${vodMeaning(v)}${d.carry ? "\n\nCarry it today: " + d.carry + "\nSit with this: " + d.ask : ""}`;
+      const text = `Verse of the Day · Shri Atmasiddhi Shastra, Verse ${n}\n\n${v.tr.join("\n")}\n\n${vodMeaning(v)}${d.point ? "\n\nFrom Bapaji's satsang: " + (d.lead ? d.lead + " " : "") + d.point + "\nSit with this: " + d.ask : ""}`;
       const btn = $("#vodShare");
       try {
         if (navigator.share) await navigator.share({ title: `Verse ${n} · Shri Atmasiddhi Shastra`, text, url });
         else { await navigator.clipboard.writeText(text + "\n\n" + url); btn.textContent = "Copied"; setTimeout(() => (btn.textContent = "Share"), 1800); }
       } catch (_) { /* the share sheet was closed */ }
+    }, { signal: ctl.signal });
+  }
+
+  // ------------------------------------------------------------------ MEMORISE
+  function memorise() {
+    const st = study();
+    const S = SITE.sections.filter((x) => x.range);
+    let queue = [], i = 0, shown = false, hint = false, single = false;
+    const script = () => (st.pref.script === "iast" ? "iast" : "gu");
+    const counts = () => {
+      const c = { known: 0, learning: 0, new: 0, due: 0 };
+      for (let n = 1; n <= 142; n++) { c[memState(n)]++; if (isDue(n)) c.due++; }
+      return c;
+    };
+    const dueList = () => SITE.verses.map((v) => v.n).filter(isDue);
+    const nextNew = () => SITE.verses.map((v) => v.n).find((n) => !st.mem[n]);
+    main.innerHTML = `
+      ${pageHead("Kaṇṭhastha · by heart", "Memorise", "All 142 verses, a few minutes a day. The verses you find hard come back sooner; the ones you know move further apart.")}
+      <section class="read mem">
+        <div class="mem-stats" id="memStats"></div>
+        <div class="frame mem-card" id="memCard" aria-live="polite"></div>
+        <div class="mem-map" id="memMap"></div>
+      </section>`;
+    const statsEl = $("#memStats"), card = $("#memCard"), map = $("#memMap");
+    const drawStats = () => {
+      const c = counts();
+      statsEl.innerHTML = `
+        <div><b>${c.known}</b><span>Memorised</span></div>
+        <div><b>${c.learning}</b><span>Learning</span></div>
+        <div><b>${c.due}</b><span>Due today</span></div>
+        <div><b>${c.new}</b><span>Not started</span></div>`;
+    };
+    const drawMap = () => {
+      map.innerHTML = `<p class="eyebrow">All 142 verses · tap any to practise it</p>
+        <p class="mem-legend"><span class="d known"></span>Memorised <span class="d learning"></span>Learning <span class="d due"></span>Due <span class="d new"></span>Not started</p>
+        ${S.map((x) => `<div class="mem-sec"><p>${secLabel(x)} · ${esc(x.name)}</p><div class="mem-dots">${
+          Array.from({ length: x.range[1] - x.range[0] + 1 }, (_, k) => x.range[0] + k)
+            .map((n) => `<button class="dot ${memState(n)}${isDue(n) ? " due" : ""}" data-n="${n}" aria-label="Verse ${n}, ${memState(n)}">${n}</button>`).join("")
+        }</div></div>`).join("")}`;
+    };
+    const begin = (list, one = false) => { queue = list; i = 0; shown = false; hint = false; single = one; drawCard(); };
+    const drawCard = () => {
+      const n = queue[i];
+      if (!n) {
+        const c = counts(), nn = nextNew();
+        card.innerHTML = `<div class="mem-empty">
+          <p class="eyebrow">${queue.length ? "Session complete" : "Nothing due"}</p>
+          <h2>${queue.length ? `${queue.length} verse${queue.length > 1 ? "s" : ""} practised` : c.known + c.learning ? "You're up to date" : "Begin memorising"}</h2>
+          <p>${c.due ? `${c.due} still due today.` : "Verses come back on their own when it's time to practise them again. Studying the Verse of the Day adds it here too."}</p>
+          <div class="cta">
+            ${c.due ? `<button class="btn sm" data-m="due">Practise ${c.due} due</button>` : ""}
+            ${nn ? `<button class="btn ${c.due ? "ghost " : ""}sm" data-m="new" data-n="${nn}">Learn Verse ${nn}</button>` : ""}
+          </div></div>`;
+        return;
+      }
+      const v = SITE.verses[n - 1], lines = v[script()], first = lines[0].split(/\s+/).slice(0, 3).join(" ");
+      card.innerHTML = `
+        <div class="mem-top"><span>${single ? "Practise" : `${i + 1} of ${queue.length}`}</span>
+          <div class="seg" role="group" aria-label="Script">
+            <button data-s="gu" class="${script() === "gu" ? "on" : ""}">ગુજરાતી</button><button data-s="iast" class="${script() === "iast" ? "on" : ""}">Roman</button>
+          </div></div>
+        <p class="vnum">VERSE ${n}</p>
+        <h2 class="mem-title">${esc(v.title || sec(v.section).name)}</h2>
+        ${shown
+          ? `<div class="mem-verse ${script()}">${lines.join("<br>")}</div>
+             <p class="mem-ask">How well did you know it?</p>
+             <div class="mem-rate">
+               <button data-r="0"><b>Forgot</b><span>again tomorrow</span></button>
+               <button data-r="1"><b>Shaky</b><span>again tomorrow</span></button>
+               <button data-r="2"><b>Knew it</b><span>${(() => { const b = st.mem[n]?.seen ? Math.min(st.mem[n].box + 1, 7) : 3; return GAP[b] === 1 ? "in a day" : `in ${GAP[b]} days`; })()}</span></button>
+             </div>`
+          : `<p class="mem-prompt">Recite it aloud or in your mind, then check.</p>
+             ${hint ? `<div class="mem-hint ${script()}">${first} …</div>` : ""}
+             <div class="cta">${hint ? "" : `<button class="btn ghost sm" data-m="hint">First words</button>`}<button class="btn sm" data-m="show">Show the verse</button></div>`}
+        <p class="mem-foot"><a href="#/verse/${n}">Open Verse ${n}</a>${memState(n) === "known" ? " · memorised" : ""}</p>`;
+    };
+    const rate = (r) => {
+      const n = queue[i], t = ymd();
+      const m = st.mem[n] || { box: 0, due: t };
+      if (r === 2) m.box = m.seen ? Math.min(m.box + 1, 7) : 3; // known already on first try: skip the early steps
+      else if (r === 0) m.box = Math.min(m.box, 1) || 1;
+      else m.box = Math.max(1, Math.min(m.box, KNOWN - 1));
+      m.due = addDays(t, r === 2 ? GAP[m.box] : 1);
+      m.last = t; m.seen = (m.seen || 0) + 1;
+      st.mem[n] = m;
+      if (!st.studied[n]) st.studied[n] = t;
+      st.days[t] = [...new Set([...(st.days[t] || []), n])];
+      saveStudy();
+      if (r === 0 && !single) queue.push(n); // see it once more before the session ends
+      i++; shown = false; hint = false;
+      drawCard(); drawStats(); drawMap();
+    };
+    main.addEventListener("click", (e) => {
+      const b = e.target.closest("button"); if (!b) return;
+      if (b.dataset.s) { st.pref.script = b.dataset.s; saveStudy(); drawCard(); return; }
+      if (b.dataset.r && b.closest(".mem-rate")) return rate(+b.dataset.r);
+      const m = b.dataset.m;
+      if (m === "hint") { hint = true; drawCard(); }
+      else if (m === "show") { shown = true; drawCard(); }
+      else if (m === "due") begin(dueList());
+      else if (m === "new") begin([+b.dataset.n], true);
+      else if (b.classList.contains("dot")) { begin([+b.dataset.n], true); card.scrollIntoView({ behavior: "smooth", block: "center" }); }
+    }, { signal: ctl.signal });
+    drawStats(); drawMap(); begin(dueList());
+  }
+
+  // ------------------------------------------------------------------ MY PROGRESS
+  function progress() {
+    const S = SITE.sections.filter((x) => x.range);
+    const START = "2026-11-26", END = "2027-04-30", today = ymd();
+    const draw = () => {
+      const st = study();
+      const days = Object.keys(st.days).filter((k) => st.days[k].length).length;
+      const studiedN = Object.keys(st.studied).length;
+      const known = SITE.verses.filter((v) => memState(v.n) === "known").length;
+      // the calendar, Sunday to Saturday, from the first day to the end of April
+      const [y, m, d] = START.split("-").map(Number), first = new Date(y, m - 1, d);
+      let k = addDays(START, -first.getDay()), cells = "", months = "", col = 0, lastM = -1;
+      while (k <= END) {
+        const [yy, mm] = k.split("-").map(Number);
+        if (new Date(yy, mm - 1, +k.slice(8)).getDay() === 0) {
+          const mo = mm - 1;
+          months += `<span style="grid-column:${++col}">${mo !== lastM ? new Date(yy, mo, 1).toLocaleDateString(undefined, { month: "short" }) : ""}</span>`;
+          lastM = mo;
+        }
+        const n = (st.days[k] || []).length;
+        cells += `<i class="${k < START ? "pre" : n >= 3 ? "l3" : n === 2 ? "l2" : n ? "l1" : ""}${k === today ? " today" : ""}${k > today ? " fut" : ""}" title="${k}${n ? ` · ${n} verse${n > 1 ? "s" : ""}` : ""}"></i>`;
+        k = addDays(k, 1);
+      }
+      main.innerHTML = `
+        ${pageHead("For Bapa · April 2027", "My Progress", "Every day of study since 26 November 2026 — the verses understood, and the verses learnt by heart.")}
+        <section class="read prog">
+          <div class="mem-stats">
+            <div><b>${days}</b><span>Days of study</span></div>
+            <div><b>${streak()}</b><span>Days in a row</span></div>
+            <div><b>${studiedN}</b><span>Verses studied</span></div>
+            <div><b>${known}</b><span>Memorised</span></div>
+          </div>
+          <div class="frame prog-cal">
+            <p class="eyebrow">The days</p>
+            <div class="cal-wrap"><div class="cal-m" style="grid-template-columns:repeat(${col},var(--c))">${months}</div>
+            <div class="cal" style="grid-template-columns:repeat(${col},var(--c))">${cells}</div></div>
+            <p class="mem-legend"><span class="d l0"></span>No study <span class="d l1"></span>1 verse <span class="d l2"></span>2 <span class="d l3"></span>3 or more</p>
+          </div>
+          <div class="prog-secs">
+            <p class="eyebrow">Through the Shastra</p>
+            ${S.map((x) => {
+              const tot = x.range[1] - x.range[0] + 1;
+              const ns = Array.from({ length: tot }, (_, q) => x.range[0] + q);
+              const a = ns.filter((n) => st.studied[n]).length, b = ns.filter((n) => memState(n) === "known").length;
+              return `<div class="ps"><div class="ps-h"><span>${secLabel(x)} · ${esc(x.name)}</span><span>${a}/${tot} studied · ${b} memorised</span></div>
+                <div class="ps-bar"><i class="a" style="width:${(a / tot) * 100}%"></i><i class="b" style="width:${(b / tot) * 100}%"></i></div></div>`;
+            }).join("")}
+          </div>
+          <div class="frame prog-keep">
+            <p class="eyebrow">Keep it safe</p>
+            <p>This record lives only on this device, in this browser or home-screen app. Save a backup now and then, and restore it on another device if you ever switch.</p>
+            <div class="cta"><button class="btn ghost sm" id="bk">Save a backup</button><label class="btn ghost sm" for="rs">Restore a backup</label><input type="file" id="rs" accept="application/json,.json" hidden></div>
+            <p class="prog-msg" id="pm" role="status"></p>
+          </div>
+        </section>`;
+      observe();
+    };
+    draw();
+    main.addEventListener("click", (e) => {
+      if (!e.target.closest("#bk")) return;
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(new Blob([JSON.stringify(study(), null, 1)], { type: "application/json" }));
+      a.download = `atmasiddhi-study-${ymd()}.json`; a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+    }, { signal: ctl.signal });
+    main.addEventListener("change", async (e) => {
+      if (e.target.id !== "rs" || !e.target.files[0]) return;
+      try {
+        const d = JSON.parse(await e.target.files[0].text());
+        if (!d || typeof d.days !== "object" || typeof d.mem !== "object") throw 0;
+        STUDY = d; study(); saveStudy(); draw(); $("#pm").textContent = "Backup restored.";
+      } catch (_) { $("#pm").textContent = "That file isn't a study backup from this site."; }
     }, { signal: ctl.signal });
   }
 
@@ -877,10 +1103,10 @@
     window.scrollTo(0, 0);
     const views = {
       "": home, shastra, verses: () => versesIndex(a), verse: () => versePage(+a, b), satsangs, satsang: () => satsangPage(a),
-      quizzes: quizIndex, quiz: () => quizPage(a), reflections, course, svadhyay: () => svadhyay(+a), journey, divine,
+      quizzes: quizIndex, quiz: () => quizPage(a), reflections, course, svadhyay: () => svadhyay(+a), journey, divine, memorise, progress,
     };
     await (views[r] || notFound)();
-    const titles = { "": "", verse: `Verse ${a}`, verses: "Verses", shastra: "The Shastra", satsangs: "Satsangs", satsang: "Satsang", quizzes: "Quizzes", quiz: "Quiz", reflections: "Reflections", course: "The Course", svadhyay: "Svādhyāy", journey: "My Journey", divine: "Divine Interactions" };
+    const titles = { "": "", verse: `Verse ${a}`, verses: "Verses", shastra: "The Shastra", satsangs: "Satsangs", satsang: "Satsang", quizzes: "Quizzes", quiz: "Quiz", reflections: "Reflections", course: "The Course", svadhyay: "Svādhyāy", journey: "My Journey", divine: "Divine Interactions", memorise: "Memorise", progress: "My Progress" };
     document.title = (titles[r] ? titles[r] + " · " : "") + "Shri Atmasiddhi Shastra · A Seeker's Journey";
     onScroll();
     observe();
